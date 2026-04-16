@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hilmar's Fitness Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.15.3/umd/Recharts.js"></script>
+  <style>
+    body { background: #111827; margin: 0; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"><p style="color:#9ca3af;padding:40px;font-family:sans-serif">Dashboard lädt...</p></div>
+
+  <!-- DATA BLOCK (plain JS, not Babel) -->
+  <script>
+const RAW = [
+  {"dt": "2026-04-16", "wk": 1, "ph": "Aufbau", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Bankdrücken", "Rudern (Langhantel)", "Schulterdrücken (Kurzhanteln)", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew (60g) + Edamame (80g) gekocht", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Quinoa-Salat mit Hähnchen, Kichererbsen und Spinat", "ingredients": "200g Hühnerbrust, 100g Quinoa (roh), 80g Kichererbsen (gekocht), 100g Spinat, 80g Tomate, 1 TL Olivenöl, Zitrone, Kreuzkümmel", "kcal": 1020, "p": 102, "k": 68, "f": 28}, "tot": {"kcal": 1809, "p": 174, "k": 126, "f": 64}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Soba-Nudelsalat mit Hähnchen und Gurke", "ingredients": "200g Hühnerbrust, 100g Soba-Nudeln (roh), 120g Gurke, 60g Karotten, 2 TL Sojasauce, 1 TL Sesamöl, Ginger, Limette, Sesam", "kcal": 980, "p": 100, "k": 70, "f": 24}, "di3": {"name": "Panzanella mit gegrilltem Hähnchen", "ingredients": "200g Hühnerbrust, 80g Ciabatta (altbacken), 150g Tomaten, 80g Gurke, 50g rote Zwiebel, frisches Basilikum, 1 TL Olivenöl, Rotweinessig", "kcal": 960, "p": 98, "k": 64, "f": 26}},
+  {"dt": "2026-04-17", "wk": 1, "ph": "Aufbau", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "30 Min", "exercises": ["HIIT Laufbahn", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew (60g) + gekochtes Ei (2 Stück)", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Gedämpftes Hähnchen mit Reis und Sojasauce-Ginger-Dip", "ingredients": "190g Hühnerbrust (gedämpft), 90g Reis (roh), 100g Pak Choi, 80g Gurke, 2 TL Sojasauce, Ginger, Frühlingszwiebel", "kcal": 930, "p": 100, "k": 74, "f": 16}, "tot": {"kcal": 1800, "p": 176, "k": 127, "f": 60}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Udon-Suppe mit Gemüse", "ingredients": "190g Hühnerbrust, 80g Udon-Nudeln (roh), 600ml Brühe, 80g Pak Choi, 60g Karotten, Sojasauce, Ginger, Frühlingszwiebel", "kcal": 910, "p": 98, "k": 74, "f": 18}, "di3": {"name": "Bibimbap mit magerem Rindfleisch (ohne Ei)", "ingredients": "170g mageres Rindfleisch, 90g Reis (roh), 80g Spinat, 80g Karotten, 60g Zucchini, Gochujang (1 TL), Sojasauce, Sesam", "kcal": 940, "p": 96, "k": 72, "f": 26}},
+  {"dt": "2026-04-18", "wk": 1, "ph": "Aufbau", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Lamm-Steak mit Sumac & Tahini-Sauce, Rucola, Zitrone", "ingredients": "280g Lamm-Steak, 100g Rucola, 3 TL Tahini, Sumac (1 TL), Olivenöl (2 TL), Zitrone", "kcal": 1390, "p": 115, "k": 25, "f": 87, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1750, "p": 166, "k": 58, "f": 93}, "beer": true, "sup": {"creatine_dose": "10g"}},
+  {"dt": "2026-04-19", "wk": 1, "ph": "Aufbau", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame (120g gekocht) + gemischte Nüsse (40g)", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Mediterrane Hähnchen-Bowl mit Farro und Oliven", "ingredients": "200g Hühnerbrust, 80g Farro (roh), 80g Kirschtomaten, 60g Gurke, 30g Kalamata-Oliven, Zitrone, Oregano, 1 TL Olivenöl", "kcal": 1030, "p": 104, "k": 72, "f": 32}, "tot": {"kcal": 1778, "p": 175, "k": 124, "f": 66}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Rindfleisch-Nudel-Bowl mit Erdnuss-Limette", "ingredients": "180g mageres Rindfleisch, 80g Reisnudeln (roh), 80g Gurke, 60g Karotten, 15g Erdnüsse, Limette, Koriander, Sojasauce, Chili", "kcal": 1050, "p": 100, "k": 68, "f": 36}, "di3": {"name": "Lamm-Köfte mit Bulgur-Salat und Minz-Joghurt", "ingredients": "180g Lamm-Hackfleisch (mager), 70g Bulgur (roh), 80g Tomate, 60g Gurke, 80g Skyr, frische Minze, Kreuzkümmel, Paprika", "kcal": 1050, "p": 100, "k": 62, "f": 36}},
+  {"dt": "2026-04-20", "wk": 1, "ph": "Aufbau", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Kniebeugen", "Rumänisches Kreuzheben", "Beinheben (hängend)", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g) mit Harissa-Würzung", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Gegrilltes Hähnchen mit Ratatouille", "ingredients": "220g Hühnerbrust, 150g Zucchini, 150g Aubergine, 120g Tomaten, 80g Paprika, 60g Zwiebel, 2 TL Olivenöl, Knoblauch, Kräuter der Provence", "kcal": 920, "p": 106, "k": 32, "f": 28}, "tot": {"kcal": 1608, "p": 175, "k": 119, "f": 40}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}, "di3": {"name": "Rindfleisch-Fajitas-Bowl (ohne Tortilla)", "ingredients": "200g Rindfleisch (Streifen), 120g Paprika, 80g Zwiebel, 60g Avocado, 80g Tomate, Limette, Koriander, Kreuzkümmel, Chili", "kcal": 1020, "p": 100, "k": 22, "f": 54}},
+  {"dt": "2026-04-21", "wk": 1, "ph": "Aufbau", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["KH-Ausfallschritte", "Kurzhanteln Reihen", "Kurzhantel-Floorpress", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew (60g) + Edamame (80g)", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Soba-Nudelsalat mit Hähnchen und Gurke", "ingredients": "200g Hühnerbrust, 100g Soba-Nudeln (roh), 120g Gurke, 60g Karotten, 2 TL Sojasauce, 1 TL Sesamöl, Ginger, Limette, Sesam", "kcal": 980, "p": 100, "k": 70, "f": 24}, "tot": {"kcal": 1769, "p": 172, "k": 128, "f": 60}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Gegrilltes Hähnchen mit Couscous und gegrilltem Gemüse", "ingredients": "210g Hühnerbrust, 80g Couscous (roh), 100g Zucchini, 100g Paprika, 80g Aubergine, 1 TL Olivenöl, Zitrone, Kräuter", "kcal": 990, "p": 104, "k": 70, "f": 24}, "di3": {"name": "Nudeln mit Hähnchen und Brokkoli-Pesto", "ingredients": "190g Hühnerbrust, 80g Vollkorn-Penne (roh), 150g Brokkoli, 1 TL Olivenöl, 15g Parmesan, Knoblauch, Basilikum, Zitrone", "kcal": 980, "p": 100, "k": 68, "f": 28}},
+  {"dt": "2026-04-22", "wk": 1, "ph": "Aufbau", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g, selbstgemacht mit Za'atar & Olivenöl)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Rindfleisch-Stir-Fry mit Brokkoli und Paprika", "ingredients": "210g Rindfleisch (Streifen), 200g Brokkoli, 120g Paprika, 80g Zwiebel, 2 TL Sojasauce, 1 TL Sesamöl, Ginger, Knoblauch, Chili", "kcal": 980, "p": 104, "k": 22, "f": 44}, "tot": {"kcal": 1668, "p": 173, "k": 109, "f": 56}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Gegrilltes Hähnchen mit Ratatouille", "ingredients": "220g Hühnerbrust, 150g Zucchini, 150g Aubergine, 120g Tomaten, 80g Paprika, 60g Zwiebel, 2 TL Olivenöl, Knoblauch, Kräuter der Provence", "kcal": 920, "p": 106, "k": 32, "f": 28}, "di3": {"name": "Lamm-Köfte mit Gurken-Tomaten-Salat und Skyr-Dip", "ingredients": "200g Lamm-Hackfleisch, 150g Gurke, 120g Tomaten, 60g rote Zwiebel, 100g Skyr, Minze, Kreuzkümmel, Sumac, Zitrone", "kcal": 1020, "p": 100, "k": 20, "f": 52}},
+  {"dt": "2026-04-23", "wk": 2, "ph": "Aufbau", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Bankdrücken", "Rudern (Langhantel)", "Schulterdrücken (Kurzhanteln)", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Soba-Nudeln mit pochiertem Hähnchen und Dashi", "ingredients": "190g Hühnerbrust, 90g Soba-Nudeln (roh), 600ml Dashi-Brühe, 80g Spinat, 1 Ei, Frühlingszwiebel, Sojasauce, Ginger", "kcal": 950, "p": 102, "k": 72, "f": 22}, "tot": {"kcal": 1820, "p": 178, "k": 125, "f": 66}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Rindfleisch-Reisnudel-Bowl mit Limetten-Dressing", "ingredients": "170g mageres Rindfleisch, 80g Reisnudeln (roh), 100g Gurke, 60g Karotten, Koriander, Minze, Limette, Fischsauce", "kcal": 920, "p": 96, "k": 70, "f": 24}, "di3": {"name": "Gedämpftes Hähnchen mit Reis und Sojasauce-Ginger-Dip", "ingredients": "190g Hühnerbrust (gedämpft), 90g Reis (roh), 100g Pak Choi, 80g Gurke, 2 TL Sojasauce, Ginger, Frühlingszwiebel", "kcal": 930, "p": 100, "k": 74, "f": 16}},
+  {"dt": "2026-04-24", "wk": 2, "ph": "Aufbau", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "32 Min", "exercises": ["HIIT Laufbahn", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Lamm-Köfte mit Bulgur-Salat und Minz-Joghurt", "ingredients": "180g Lamm-Hackfleisch (mager), 70g Bulgur (roh), 80g Tomate, 60g Gurke, 80g Skyr, frische Minze, Kreuzkümmel, Paprika", "kcal": 1050, "p": 100, "k": 62, "f": 36}, "tot": {"kcal": 1798, "p": 171, "k": 114, "f": 70}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Orzo mit getrockneten Tomaten und Spinat", "ingredients": "200g Hühnerbrust, 80g Orzo (roh), 100g Spinat, 30g getrocknete Tomaten, Knoblauch, 15g Parmesan, 1 TL Olivenöl, Basilikum", "kcal": 1020, "p": 106, "k": 68, "f": 28}, "di3": {"name": "Marokkanische Hähnchen-Gemüse-Tajine mit Couscous", "ingredients": "200g Hühnerbrust, 70g Couscous (roh), 100g Zucchini, 80g Kichererbsen, 80g Zwiebel, Ras el-Hanout, Zimt, 1 TL Olivenöl", "kcal": 1050, "p": 106, "k": 76, "f": 26}},
+  {"dt": "2026-04-25", "wk": 2, "ph": "Aufbau", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Hühnchensteak mit Sumac & Tahini, Grünkohl-Salat", "ingredients": "300g Hühnerbrust (Steak-Schnitt), 100g Grünkohl, 3 TL Tahini, Sumac, Olivenöl, Zitrone", "kcal": 1340, "p": 120, "k": 30, "f": 77, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1700, "p": 171, "k": 63, "f": 83}, "beer": true, "sup": {"creatine_dose": "10g"}},
+  {"dt": "2026-04-26", "wk": 2, "ph": "Aufbau", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Panzanella mit gegrilltem Hähnchen", "ingredients": "200g Hühnerbrust, 80g Ciabatta (altbacken), 150g Tomaten, 80g Gurke, 50g rote Zwiebel, frisches Basilikum, 1 TL Olivenöl, Rotweinessig", "kcal": 960, "p": 98, "k": 64, "f": 26}, "tot": {"kcal": 1749, "p": 170, "k": 122, "f": 62}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Huhn-Bulgur-Bowl mit Tahini-Zitrone", "ingredients": "200g Hühnerbrust, 80g Bulgur (roh), 100g Gurke, 80g Tomate, 50g Rucola, 1 TL Tahini, Zitrone, Sumac", "kcal": 970, "p": 102, "k": 66, "f": 26}, "di3": {"name": "Türkische Linsensuppe mit Hähnchen", "ingredients": "180g Hühnerbrust, 80g rote Linsen (roh), 100g Karotten, 80g Zwiebel, Kreuzkümmel, Paprika, 1 TL Olivenöl, Zitrone", "kcal": 960, "p": 98, "k": 72, "f": 22}},
+  {"dt": "2026-04-27", "wk": 2, "ph": "Aufbau", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Kniebeugen", "Rumänisches Kreuzheben", "Beinheben", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Harissa+Sumac)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Lamm-Köfte mit Gurken-Tomaten-Salat und Skyr-Dip", "ingredients": "200g Lamm-Hackfleisch, 150g Gurke, 120g Tomaten, 60g rote Zwiebel, 100g Skyr, Minze, Kreuzkümmel, Sumac, Zitrone", "kcal": 1020, "p": 100, "k": 20, "f": 52}, "tot": {"kcal": 1708, "p": 169, "k": 107, "f": 64}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Lamm-Burger (ohne Brötchen) mit Tzatziki und Salat", "ingredients": "200g Lamm-Hackfleisch, 150g gemischter Salat, 80g Gurke, 80g Tomate, 80g Skyr, Knoblauch, Dill, Minze, Kreuzkümmel", "kcal": 980, "p": 100, "k": 18, "f": 50}, "di3": {"name": "Hähnchen-Spinat-Pfanne mit Champignons", "ingredients": "220g Hühnerbrust, 200g Spinat, 150g Champignons, 80g Zwiebel, Knoblauch, 1 TL Olivenöl, Muskatnuss, Zitrone", "kcal": 840, "p": 108, "k": 18, "f": 24}},
+  {"dt": "2026-04-28", "wk": 2, "ph": "Aufbau", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["KH-Ausfallschritte", "Kurzhanteln Reihen", "Kurzhantel-Floorpress", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Hähnchen-Caesar-Salat mit Parmesan", "ingredients": "220g Hühnerbrust, 150g Romana-Salat, 20g Parmesan, 40g Ciabatta-Croutons, Knoblauch, Zitrone, 1 TL Olivenöl, Senf, Worcestershire", "kcal": 880, "p": 106, "k": 30, "f": 28}, "tot": {"kcal": 1568, "p": 175, "k": 117, "f": 40}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Gegrilltes Hähnchen mit Ratatouille", "ingredients": "220g Hühnerbrust, 150g Zucchini, 150g Aubergine, 120g Tomaten, 80g Paprika, 60g Zwiebel, 2 TL Olivenöl, Knoblauch, Kräuter der Provence", "kcal": 920, "p": 106, "k": 32, "f": 28}, "di3": {"name": "Rindfleisch-Stir-Fry mit Brokkoli und Paprika", "ingredients": "210g Rindfleisch (Streifen), 200g Brokkoli, 120g Paprika, 80g Zwiebel, 2 TL Sojasauce, 1 TL Sesamöl, Ginger, Knoblauch, Chili", "kcal": 980, "p": 104, "k": 22, "f": 44}},
+  {"dt": "2026-04-29", "wk": 2, "ph": "Aufbau", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Hähnchen-Reisnudel-Suppe (vietnamesisch)", "ingredients": "190g Hühnerbrust, 80g Reisnudeln (roh), 750ml Brühe, 100g Bohnenkeimlinge, Koriander, Limette, Fischsauce, Chili", "kcal": 890, "p": 98, "k": 66, "f": 16}, "tot": {"kcal": 1760, "p": 174, "k": 119, "f": 60}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Reis mit pochiertem Hähnchen und Ingwer-Brühe", "ingredients": "200g Hühnerbrust (pochiert), 90g Reis (roh), 400ml Brühe, Ginger (3cm), Frühlingszwiebel, Sojasauce, Koriander", "kcal": 940, "p": 102, "k": 74, "f": 18}, "di3": {"name": "Hähnchen-Gemüse-Eintopf mit Kartoffeln", "ingredients": "190g Hühnerbrust, 150g Kartoffel, 100g Karotten, 80g Zucchini, 80g Zwiebel, 400ml Brühe, Thymian, Lorbeer", "kcal": 890, "p": 98, "k": 72, "f": 16}},
+  {"dt": "2026-04-30", "wk": 3, "ph": "Aufbau", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Bankdrücken", "Rudern (Langhantel)", "Schulterdrücken", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Hähnchen-Paella (ölarm)", "ingredients": "200g Hühnerbrust, 80g Reis (roh), 80g Paprika, 60g Erbsen, 80g Tomate, Safran, Knoblauch, 1 TL Olivenöl, Zitrone", "kcal": 1000, "p": 104, "k": 74, "f": 24}, "tot": {"kcal": 1748, "p": 175, "k": 126, "f": 58}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Rindfleisch-Bohnen-Bowl mit Avocado", "ingredients": "180g mageres Rindfleisch, 80g schwarze Bohnen, 80g Reis (roh), 30g Avocado, 60g Tomate, Limette, Koriander, Kreuzkümmel", "kcal": 1060, "p": 102, "k": 74, "f": 34}, "di3": {"name": "Sobanudelsalat mit Rindfleisch und Kräutern", "ingredients": "180g mageres Rindfleisch, 90g Soba-Nudeln (roh), 100g Gurke, 60g Karotten, frischer Koriander, Minze, 2 TL Sojasauce, 1 TL Sesamöl, Limette", "kcal": 1040, "p": 100, "k": 70, "f": 34}},
+  {"dt": "2026-05-01", "wk": 3, "ph": "Aufbau", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "32 Min", "exercises": ["HIIT Laufbahn", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Zucchini-Nudeln mit Rindfleisch-Bolognese", "ingredients": "200g mageres Rindfleisch-Hackfleisch, 300g Zucchini (spiralisiert), 150g passierte Tomaten, 80g Zwiebel, Knoblauch, Oregano, Basilikum, 1 TL Olivenöl", "kcal": 940, "p": 100, "k": 24, "f": 44}, "tot": {"kcal": 1628, "p": 169, "k": 111, "f": 56}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Gebratenes Hähnchen mit Blumenkohl-Reis und Erdnuss-Sauce", "ingredients": "210g Hühnerbrust, 250g Blumenkohl (geraspelt), 80g Paprika, 60g Frühlingszwiebel, 20g Erdnussbutter, 1 TL Sojasauce, Limette, Koriander", "kcal": 940, "p": 108, "k": 24, "f": 38}, "di3": {"name": "Rinder-Tataki mit Sesam und Gurkensalat", "ingredients": "210g Rindfleisch (Filet), 200g Gurke, 60g Radieschen, 2 TL Sojasauce, 1 TL Sesamöl, Sesam, Ginger, Frühlingszwiebel, Reisessig", "kcal": 920, "p": 106, "k": 16, "f": 40}},
+  {"dt": "2026-05-02", "wk": 3, "ph": "Aufbau", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Rindfleisch-Steak mit Harissa-Butter & Rucola", "ingredients": "300g Rindfleisch-Steak (Ribeye), 100g Rucola, 50g Harissa-Butter (gemischt), Zitrone", "kcal": 1410, "p": 122, "k": 18, "f": 94, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1770, "p": 173, "k": 51, "f": 100}, "beer": true, "sup": {"creatine_dose": "10g"}},
+  {"dt": "2026-05-03", "wk": 3, "ph": "Aufbau", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Pasta mit Hähnchen und Tomatensauce (fettarm)", "ingredients": "190g Hühnerbrust, 80g Penne (roh), 200g passierte Tomaten, 80g Zwiebel, Knoblauch, Basilikum, 1 TL Olivenöl", "kcal": 920, "p": 100, "k": 72, "f": 20}, "tot": {"kcal": 1790, "p": 176, "k": 125, "f": 64}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Gemüse-Eintopf mit Kartoffeln", "ingredients": "190g Hühnerbrust, 150g Kartoffel, 100g Karotten, 80g Zucchini, 80g Zwiebel, 400ml Brühe, Thymian, Lorbeer", "kcal": 890, "p": 98, "k": 72, "f": 16}, "di3": {"name": "Mageres Rindfleisch mit Reis und Brühe (Gyudon light)", "ingredients": "170g mageres Rindfleisch (dünn), 90g Reis (roh), 100g Zwiebel, 300ml Dashi, Sojasauce, Mirin, Ginger", "kcal": 950, "p": 96, "k": 76, "f": 26}},
+  {"dt": "2026-05-04", "wk": 3, "ph": "Aufbau", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Kniebeugen", "Rumänisches Kreuzheben", "Beinheben", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Hähnchen-Pho mit Reisnudeln", "ingredients": "200g Hühnerbrust, 80g Reisnudeln (roh), 750ml klare Brühe, 80g Frühlingszwiebel, Koriander, Limette, Ginger, Fischsauce, Chili", "kcal": 920, "p": 100, "k": 62, "f": 18}, "tot": {"kcal": 1709, "p": 172, "k": 120, "f": 54}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Huhn-Bulgur-Bowl mit Tahini-Zitrone", "ingredients": "200g Hühnerbrust, 80g Bulgur (roh), 100g Gurke, 80g Tomate, 50g Rucola, 1 TL Tahini, Zitrone, Sumac", "kcal": 970, "p": 102, "k": 66, "f": 26}, "di3": {"name": "Türkische Linsensuppe mit Hähnchen", "ingredients": "180g Hühnerbrust, 80g rote Linsen (roh), 100g Karotten, 80g Zwiebel, Kreuzkümmel, Paprika, 1 TL Olivenöl, Zitrone", "kcal": 960, "p": 98, "k": 72, "f": 22}},
+  {"dt": "2026-05-05", "wk": 3, "ph": "Aufbau", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["KH-Ausfallschritte", "Kurzhanteln Reihen", "Kurzhantel-Floorpress", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Rindfleisch-Bohnen-Bowl mit Avocado", "ingredients": "180g mageres Rindfleisch, 80g schwarze Bohnen, 80g Reis (roh), 30g Avocado, 60g Tomate, Limette, Koriander, Kreuzkümmel", "kcal": 1060, "p": 102, "k": 74, "f": 34}, "tot": {"kcal": 1808, "p": 173, "k": 126, "f": 68}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Rindfleisch-Fajita-Bowl mit Reis und Paprika", "ingredients": "180g mageres Rindfleisch, 80g Reis (roh), 100g Paprika, 80g Zwiebel, 60g Tomate, Limette, Koriander, Kreuzkümmel, 1 TL Olivenöl", "kcal": 1040, "p": 100, "k": 72, "f": 34}, "di3": {"name": "Hähnchen-Risotto mit Zitrone und Erbsen", "ingredients": "200g Hühnerbrust, 80g Risotto-Reis (roh), 80g Erbsen, 15g Parmesan, 400ml Brühe, 1 TL Olivenöl, Zitrone", "kcal": 1020, "p": 106, "k": 74, "f": 28}},
+  {"dt": "2026-05-06", "wk": 3, "ph": "Aufbau", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Griechischer Salat mit gegrilltem Hähnchen und Feta", "ingredients": "210g Hühnerbrust, 150g Tomaten, 120g Gurke, 60g Paprika, 40g Feta, 30g Kalamata-Oliven, rote Zwiebel, Oregano, 1 TL Olivenöl", "kcal": 920, "p": 104, "k": 18, "f": 38}, "tot": {"kcal": 1608, "p": 173, "k": 105, "f": 50}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Thai-Basilikum-Hähnchen mit Gemüse (ohne Reis)", "ingredients": "220g Hühnerbrust, 150g grüne Bohnen, 100g Paprika, 80g Zwiebel, Thai-Basilikum, 2 TL Sojasauce, 1 TL Sesamöl, Chili, Knoblauch", "kcal": 880, "p": 106, "k": 24, "f": 24}, "di3": {"name": "Gegrilltes Rindfleisch mit Chimichurri und Gemüse", "ingredients": "200g Rindfleisch-Steak, 150g Zucchini, 100g Paprika, 80g Aubergine, Chimichurri (Petersilie, Knoblauch, Essig, 1 TL Olivenöl)", "kcal": 1020, "p": 100, "k": 18, "f": 54}},
+  {"dt": "2026-05-07", "wk": 4, "ph": "Peak", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Bankdrücken", "Rudern (Langhantel)", "Schulterdrücken", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Gegrilltes Hähnchen mit Couscous und gegrilltem Gemüse", "ingredients": "210g Hühnerbrust, 80g Couscous (roh), 100g Zucchini, 100g Paprika, 80g Aubergine, 1 TL Olivenöl, Zitrone, Kräuter", "kcal": 990, "p": 104, "k": 70, "f": 24}, "tot": {"kcal": 1779, "p": 176, "k": 128, "f": 60}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Pho mit Reisnudeln", "ingredients": "200g Hühnerbrust, 80g Reisnudeln (roh), 750ml klare Brühe, 80g Frühlingszwiebel, Koriander, Limette, Ginger, Fischsauce, Chili", "kcal": 920, "p": 100, "k": 62, "f": 18}, "di3": {"name": "Nudeln mit Hähnchen und Brokkoli-Pesto", "ingredients": "190g Hühnerbrust, 80g Vollkorn-Penne (roh), 150g Brokkoli, 1 TL Olivenöl, 15g Parmesan, Knoblauch, Basilikum, Zitrone", "kcal": 980, "p": 100, "k": 68, "f": 28}},
+  {"dt": "2026-05-08", "wk": 4, "ph": "Peak", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "35 Min", "exercises": ["HIIT Laufbahn — 8 Intervalle", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Za'atar)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Hähnchen-Shawarma-Teller mit Hummus und Salat", "ingredients": "210g Hühnerbrust, 60g Hummus, 100g Salat-Mix, 80g Tomate, 60g Gurke, Sumac, Kreuzkümmel, Paprika, Knoblauch, Zitrone", "kcal": 920, "p": 106, "k": 28, "f": 36}, "tot": {"kcal": 1608, "p": 175, "k": 115, "f": 48}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}, "di3": {"name": "Rindfleisch-Fajitas-Bowl (ohne Tortilla)", "ingredients": "200g Rindfleisch (Streifen), 120g Paprika, 80g Zwiebel, 60g Avocado, 80g Tomate, Limette, Koriander, Kreuzkümmel, Chili", "kcal": 1020, "p": 100, "k": 22, "f": 54}},
+  {"dt": "2026-05-09", "wk": 4, "ph": "Peak", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Lamm-Schulter-Steak mit schwarzem Knoblauch & Minze", "ingredients": "300g Lamm-Schulter-Steak, schwarzer Knoblauch (1 EL), frische Minze (20g), Olivenöl (2 TL), Zitrone, Sumac", "kcal": 1440, "p": 125, "k": 15, "f": 97, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1800, "p": 176, "k": 48, "f": 103}, "beer": true, "sup": {"creatine_dose": "10g"}},
+  {"dt": "2026-05-10", "wk": 4, "ph": "Peak", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Sobanudelsalat mit Rindfleisch und Kräutern", "ingredients": "180g mageres Rindfleisch, 90g Soba-Nudeln (roh), 100g Gurke, 60g Karotten, frischer Koriander, Minze, 2 TL Sojasauce, 1 TL Sesamöl, Limette", "kcal": 1040, "p": 100, "k": 70, "f": 34}, "tot": {"kcal": 1788, "p": 171, "k": 122, "f": 68}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Paella (ölarm)", "ingredients": "200g Hühnerbrust, 80g Reis (roh), 80g Paprika, 60g Erbsen, 80g Tomate, Safran, Knoblauch, 1 TL Olivenöl, Zitrone", "kcal": 1000, "p": 104, "k": 74, "f": 24}, "di3": {"name": "Rindfleisch-Bohnen-Bowl mit Avocado", "ingredients": "180g mageres Rindfleisch, 80g schwarze Bohnen, 80g Reis (roh), 30g Avocado, 60g Tomate, Limette, Koriander, Kreuzkümmel", "kcal": 1060, "p": 102, "k": 74, "f": 34}},
+  {"dt": "2026-05-11", "wk": 4, "ph": "Peak", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Kniebeugen", "Rumänisches Kreuzheben", "Beinheben (hängend, langsam)", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Hähnchen-Udon-Suppe mit Gemüse", "ingredients": "190g Hühnerbrust, 80g Udon-Nudeln (roh), 600ml Brühe, 80g Pak Choi, 60g Karotten, Sojasauce, Ginger, Frühlingszwiebel", "kcal": 910, "p": 98, "k": 74, "f": 18}, "tot": {"kcal": 1780, "p": 174, "k": 127, "f": 62}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Congee mit Ginger und Frühlingszwiebel", "ingredients": "190g Hühnerbrust, 60g Reis (roh, lange gekocht), 800ml Brühe, Ginger (3cm), Frühlingszwiebel, Sojasauce, weißer Pfeffer", "kcal": 870, "p": 98, "k": 66, "f": 14}, "di3": {"name": "Rindfleisch-Reisnudel-Bowl mit Limetten-Dressing", "ingredients": "170g mageres Rindfleisch, 80g Reisnudeln (roh), 100g Gurke, 60g Karotten, Koriander, Minze, Limette, Fischsauce", "kcal": 920, "p": 96, "k": 70, "f": 24}},
+  {"dt": "2026-05-12", "wk": 4, "ph": "Peak", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["KH-Ausfallschritte (schwerer)", "Kurzhanteln Reihen", "Kurzhantel-Floorpress (schwerer)", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g, Harissa)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Thai-Basilikum-Hähnchen mit Gemüse (ohne Reis)", "ingredients": "220g Hühnerbrust, 150g grüne Bohnen, 100g Paprika, 80g Zwiebel, Thai-Basilikum, 2 TL Sojasauce, 1 TL Sesamöl, Chili, Knoblauch", "kcal": 880, "p": 106, "k": 24, "f": 24}, "tot": {"kcal": 1568, "p": 175, "k": 111, "f": 36}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Shawarma-Teller mit Hummus und Salat", "ingredients": "210g Hühnerbrust, 60g Hummus, 100g Salat-Mix, 80g Tomate, 60g Gurke, Sumac, Kreuzkümmel, Paprika, Knoblauch, Zitrone", "kcal": 920, "p": 106, "k": 28, "f": 36}, "di3": {"name": "Gegrilltes Rindfleisch mit Chimichurri und Gemüse", "ingredients": "200g Rindfleisch-Steak, 150g Zucchini, 100g Paprika, 80g Aubergine, Chimichurri (Petersilie, Knoblauch, Essig, 1 TL Olivenöl)", "kcal": 1020, "p": 100, "k": 18, "f": 54}},
+  {"dt": "2026-05-13", "wk": 4, "ph": "Peak", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Nudeln mit Hähnchen und Brokkoli-Pesto", "ingredients": "190g Hühnerbrust, 80g Vollkorn-Penne (roh), 150g Brokkoli, 1 TL Olivenöl, 15g Parmesan, Knoblauch, Basilikum, Zitrone", "kcal": 980, "p": 100, "k": 68, "f": 28}, "tot": {"kcal": 1769, "p": 172, "k": 126, "f": 64}, "beer": false, "sup": {"creatine_dose": "10g"}, "di2": {"name": "Hähnchen-Wrap-Bowl mit Reis und schwarzen Bohnen", "ingredients": "200g Hühnerbrust, 80g Reis (roh), 60g schwarze Bohnen, 80g Paprika, 60g Tomate, Limette, Koriander, Kreuzkümmel, 1 TL Olivenöl", "kcal": 1000, "p": 102, "k": 72, "f": 24}, "di3": {"name": "Hähnchen mit Kartoffeln und grünen Bohnen", "ingredients": "200g Hühnerbrust, 120g Kartoffeln, 150g grüne Bohnen, 80g Kirschtomaten, 1 TL Olivenöl, Rosmarin, Knoblauch, Zitrone", "kcal": 940, "p": 100, "k": 66, "f": 22}},
+  {"dt": "2026-05-14", "wk": 5, "ph": "Peak", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Bankdrücken", "Rudern (Langhantel)", "Schulterdrücken", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Sumac+Chili)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Gegrilltes Rindfleisch mit Chimichurri und Gemüse", "ingredients": "200g Rindfleisch-Steak, 150g Zucchini, 100g Paprika, 80g Aubergine, Chimichurri (Petersilie, Knoblauch, Essig, 1 TL Olivenöl)", "kcal": 1020, "p": 100, "k": 18, "f": 54}, "tot": {"kcal": 1708, "p": 169, "k": 105, "f": 66}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}, "di3": {"name": "Rindfleisch-Fajitas-Bowl (ohne Tortilla)", "ingredients": "200g Rindfleisch (Streifen), 120g Paprika, 80g Zwiebel, 60g Avocado, 80g Tomate, Limette, Koriander, Kreuzkümmel, Chili", "kcal": 1020, "p": 100, "k": 22, "f": 54}},
+  {"dt": "2026-05-15", "wk": 5, "ph": "Peak", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "35 Min", "exercises": ["HIIT Laufbahn — 8 Intervalle (höchste Intensität)", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Bibimbap mit magerem Rindfleisch (ohne Ei)", "ingredients": "170g mageres Rindfleisch, 90g Reis (roh), 80g Spinat, 80g Karotten, 60g Zucchini, Gochujang (1 TL), Sojasauce, Sesam", "kcal": 940, "p": 96, "k": 72, "f": 26}, "tot": {"kcal": 1810, "p": 172, "k": 125, "f": 70}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Rindfleisch-Reisnudel-Bowl mit Limetten-Dressing", "ingredients": "170g mageres Rindfleisch, 80g Reisnudeln (roh), 100g Gurke, 60g Karotten, Koriander, Minze, Limette, Fischsauce", "kcal": 920, "p": 96, "k": 70, "f": 24}, "di3": {"name": "Gedämpftes Hähnchen mit Reis und Sojasauce-Ginger-Dip", "ingredients": "190g Hühnerbrust (gedämpft), 90g Reis (roh), 100g Pak Choi, 80g Gurke, 2 TL Sojasauce, Ginger, Frühlingszwiebel", "kcal": 930, "p": 100, "k": 74, "f": 16}},
+  {"dt": "2026-05-16", "wk": 5, "ph": "Peak", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Hühnchen-Escalope mit Harissa & Zitrone, Grünkohl", "ingredients": "320g Hühnerbrust (schmetterling-cut), 100g Grünkohl, 2 TL Harissa, Olivenöl, Zitrone, schwarzer Pfeffer", "kcal": 1310, "p": 128, "k": 20, "f": 67, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1670, "p": 179, "k": 53, "f": 73}, "beer": true, "sup": {"creatine_dose": "5g"}},
+  {"dt": "2026-05-17", "wk": 5, "ph": "Peak", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g, Za'atar+Sumac)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Auberginen-Hähnchen-Auflauf mit Tomaten und Mozzarella", "ingredients": "200g Hühnerbrust, 200g Aubergine, 150g Tomaten, 40g Mozzarella, Knoblauch, Basilikum, Oregano, 1 TL Olivenöl", "kcal": 880, "p": 104, "k": 22, "f": 32}, "tot": {"kcal": 1568, "p": 173, "k": 109, "f": 44}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Caesar-Salat mit Parmesan", "ingredients": "220g Hühnerbrust, 150g Romana-Salat, 20g Parmesan, 40g Ciabatta-Croutons, Knoblauch, Zitrone, 1 TL Olivenöl, Senf, Worcestershire", "kcal": 880, "p": 106, "k": 30, "f": 28}, "di3": {"name": "Zucchini-Nudeln mit Rindfleisch-Bolognese", "ingredients": "200g mageres Rindfleisch-Hackfleisch, 300g Zucchini (spiralisiert), 150g passierte Tomaten, 80g Zwiebel, Knoblauch, Oregano, Basilikum, 1 TL Olivenöl", "kcal": 940, "p": 100, "k": 24, "f": 44}},
+  {"dt": "2026-05-18", "wk": 5, "ph": "Peak", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Kniebeugen", "Rumänisches Kreuzheben", "Beinheben (hängend, langsam)", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Hähnchen-Orzo mit getrockneten Tomaten und Spinat", "ingredients": "200g Hühnerbrust, 80g Orzo (roh), 100g Spinat, 30g getrocknete Tomaten, Knoblauch, 15g Parmesan, 1 TL Olivenöl, Basilikum", "kcal": 1020, "p": 106, "k": 68, "f": 28}, "tot": {"kcal": 1768, "p": 177, "k": 120, "f": 62}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Gegrilltes Hähnchen mit Linsensalat und Zitrone", "ingredients": "210g Hühnerbrust, 80g grüne Linsen (roh), 80g Tomate, 60g Gurke, 50g rote Zwiebel, 1 TL Olivenöl, Zitrone, Petersilie, Kreuzkümmel", "kcal": 1060, "p": 106, "k": 72, "f": 30}, "di3": {"name": "Rindfleisch-Fajita-Bowl mit Reis und Paprika", "ingredients": "180g mageres Rindfleisch, 80g Reis (roh), 100g Paprika, 80g Zwiebel, 60g Tomate, Limette, Koriander, Kreuzkümmel, 1 TL Olivenöl", "kcal": 1040, "p": 100, "k": 72, "f": 34}},
+  {"dt": "2026-05-19", "wk": 5, "ph": "Peak", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["KH-Ausfallschritte (schwerer)", "Kurzhanteln Reihen", "Kurzhantel-Floorpress (schwerer)", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Rindfleisch-Pho (klar, mager)", "ingredients": "200g mageres Rindfleisch (dünn), 80g Reisnudeln (roh), 750ml Brühe, 80g Frühlingszwiebel, Koriander, Limette, Fischsauce", "kcal": 960, "p": 98, "k": 60, "f": 30}, "tot": {"kcal": 1749, "p": 170, "k": 118, "f": 66}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Pho mit Reisnudeln", "ingredients": "200g Hühnerbrust, 80g Reisnudeln (roh), 750ml klare Brühe, 80g Frühlingszwiebel, Koriander, Limette, Ginger, Fischsauce, Chili", "kcal": 920, "p": 100, "k": 62, "f": 18}, "di3": {"name": "Gegrilltes Hähnchen mit Couscous und gegrilltem Gemüse", "ingredients": "210g Hühnerbrust, 80g Couscous (roh), 100g Zucchini, 100g Paprika, 80g Aubergine, 1 TL Olivenöl, Zitrone, Kräuter", "kcal": 990, "p": 104, "k": 70, "f": 24}},
+  {"dt": "2026-05-20", "wk": 5, "ph": "Peak", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Paprika+Knoblauch)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Gebratenes Hähnchen mit Blumenkohl-Reis und Erdnuss-Sauce", "ingredients": "210g Hühnerbrust, 250g Blumenkohl (geraspelt), 80g Paprika, 60g Frühlingszwiebel, 20g Erdnussbutter, 1 TL Sojasauce, Limette, Koriander", "kcal": 940, "p": 108, "k": 24, "f": 38}, "tot": {"kcal": 1628, "p": 177, "k": 111, "f": 50}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}, "di3": {"name": "Rindfleisch-Fajitas-Bowl (ohne Tortilla)", "ingredients": "200g Rindfleisch (Streifen), 120g Paprika, 80g Zwiebel, 60g Avocado, 80g Tomate, Limette, Koriander, Kreuzkümmel, Chili", "kcal": 1020, "p": 100, "k": 22, "f": 54}},
+  {"dt": "2026-05-21", "wk": 6, "ph": "Peak", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Bankdrücken", "Rudern (Langhantel)", "Schulterdrücken", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Nudeln mit Chili-Öl, Hähnchen und Frühlingszwiebeln", "ingredients": "190g Hühnerbrust, 80g Nudeln (roh), 80g Frühlingszwiebel, 1 TL Chili-Öl, Sojasauce, Knoblauch, Essig, Sesam", "kcal": 920, "p": 100, "k": 70, "f": 20}, "tot": {"kcal": 1790, "p": 176, "k": 123, "f": 64}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Reis mit pochiertem Hähnchen und Ingwer-Brühe", "ingredients": "200g Hühnerbrust (pochiert), 90g Reis (roh), 400ml Brühe, Ginger (3cm), Frühlingszwiebel, Sojasauce, Koriander", "kcal": 940, "p": 102, "k": 74, "f": 18}, "di3": {"name": "Hähnchen-Gemüse-Eintopf mit Kartoffeln", "ingredients": "190g Hühnerbrust, 150g Kartoffel, 100g Karotten, 80g Zucchini, 80g Zwiebel, 400ml Brühe, Thymian, Lorbeer", "kcal": 890, "p": 98, "k": 72, "f": 16}},
+  {"dt": "2026-05-22", "wk": 6, "ph": "Peak", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "36 Min", "exercises": ["HIIT Laufbahn — 8 Intervalle (maximale Anstrengung)", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Marokkanische Hähnchen-Gemüse-Tajine mit Couscous", "ingredients": "200g Hühnerbrust, 70g Couscous (roh), 100g Zucchini, 80g Kichererbsen, 80g Zwiebel, Ras el-Hanout, Zimt, 1 TL Olivenöl", "kcal": 1050, "p": 106, "k": 76, "f": 26}, "tot": {"kcal": 1798, "p": 177, "k": 128, "f": 60}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Risotto mit Zitrone und Erbsen", "ingredients": "200g Hühnerbrust, 80g Risotto-Reis (roh), 80g Erbsen, 15g Parmesan, 400ml Brühe, 1 TL Olivenöl, Zitrone", "kcal": 1020, "p": 106, "k": 74, "f": 28}, "di3": {"name": "Rindfleisch-Nudel-Bowl mit Erdnuss-Limette", "ingredients": "180g mageres Rindfleisch, 80g Reisnudeln (roh), 80g Gurke, 60g Karotten, 15g Erdnüsse, Limette, Koriander, Sojasauce, Chili", "kcal": 1050, "p": 100, "k": 68, "f": 36}},
+  {"dt": "2026-05-23", "wk": 6, "ph": "Peak", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Rindfleisch-Entrecôte mit Sumac-Butter & Rucola", "ingredients": "320g Rindfleisch-Entrecôte, 100g Rucola, 3 TL Sumac-Butter, Olivenöl, Zitrone", "kcal": 1470, "p": 128, "k": 18, "f": 100, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1830, "p": 179, "k": 51, "f": 106}, "beer": true, "sup": {"creatine_dose": "5g"}},
+  {"dt": "2026-05-24", "wk": 6, "ph": "Peak", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Huhn-Bulgur-Bowl mit Tahini-Zitrone", "ingredients": "200g Hühnerbrust, 80g Bulgur (roh), 100g Gurke, 80g Tomate, 50g Rucola, 1 TL Tahini, Zitrone, Sumac", "kcal": 970, "p": 102, "k": 66, "f": 26}, "tot": {"kcal": 1759, "p": 174, "k": 124, "f": 62}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Rindfleisch-Pho (klar, mager)", "ingredients": "200g mageres Rindfleisch (dünn), 80g Reisnudeln (roh), 750ml Brühe, 80g Frühlingszwiebel, Koriander, Limette, Fischsauce", "kcal": 960, "p": 98, "k": 60, "f": 30}, "di3": {"name": "Türkische Linsensuppe mit Hähnchen", "ingredients": "180g Hühnerbrust, 80g rote Linsen (roh), 100g Karotten, 80g Zwiebel, Kreuzkümmel, Paprika, 1 TL Olivenöl, Zitrone", "kcal": 960, "p": 98, "k": 72, "f": 22}},
+  {"dt": "2026-05-25", "wk": 6, "ph": "Peak", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Kniebeugen", "Rumänisches Kreuzheben", "Beinheben (hängend, Tempo 4-1-2)", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g, Harissa+Lemongrass)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Rinder-Tataki mit Sesam und Gurkensalat", "ingredients": "210g Rindfleisch (Filet), 200g Gurke, 60g Radieschen, 2 TL Sojasauce, 1 TL Sesamöl, Sesam, Ginger, Frühlingszwiebel, Reisessig", "kcal": 920, "p": 106, "k": 16, "f": 40}, "tot": {"kcal": 1608, "p": 175, "k": 103, "f": 52}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Auberginen-Hähnchen-Auflauf mit Tomaten und Mozzarella", "ingredients": "200g Hühnerbrust, 200g Aubergine, 150g Tomaten, 40g Mozzarella, Knoblauch, Basilikum, Oregano, 1 TL Olivenöl", "kcal": 880, "p": 104, "k": 22, "f": 32}, "di3": {"name": "Gebratenes Hähnchen mit Blumenkohl-Reis und Erdnuss-Sauce", "ingredients": "210g Hühnerbrust, 250g Blumenkohl (geraspelt), 80g Paprika, 60g Frühlingszwiebel, 20g Erdnussbutter, 1 TL Sojasauce, Limette, Koriander", "kcal": 940, "p": 108, "k": 24, "f": 38}},
+  {"dt": "2026-05-26", "wk": 6, "ph": "Peak", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["KH-Ausfallschritte (maximal schwer)", "Kurzhanteln Reihen", "Kurzhantel-Floorpress (schwerer)", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Chili+Limette)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Gegrillte Lammspieße mit Harissa-Skyr und Rucola", "ingredients": "200g Lamm (Würfel), 100g Rucola, 80g Tomate, 80g Skyr, 1 TL Harissa, Zitrone, Minze, Sumac", "kcal": 1000, "p": 104, "k": 16, "f": 50}, "tot": {"kcal": 1688, "p": 173, "k": 103, "f": 62}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}, "di3": {"name": "Rindfleisch-Fajitas-Bowl (ohne Tortilla)", "ingredients": "200g Rindfleisch (Streifen), 120g Paprika, 80g Zwiebel, 60g Avocado, 80g Tomate, Limette, Koriander, Kreuzkümmel, Chili", "kcal": 1020, "p": 100, "k": 22, "f": 54}},
+  {"dt": "2026-05-27", "wk": 6, "ph": "Peak", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Reis mit pochiertem Hähnchen und Ingwer-Brühe", "ingredients": "200g Hühnerbrust (pochiert), 90g Reis (roh), 400ml Brühe, Ginger (3cm), Frühlingszwiebel, Sojasauce, Koriander", "kcal": 940, "p": 102, "k": 74, "f": 18}, "tot": {"kcal": 1810, "p": 178, "k": 127, "f": 62}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Reisnudel-Suppe (vietnamesisch)", "ingredients": "190g Hühnerbrust, 80g Reisnudeln (roh), 750ml Brühe, 100g Bohnenkeimlinge, Koriander, Limette, Fischsauce, Chili", "kcal": 890, "p": 98, "k": 66, "f": 16}, "di3": {"name": "Pasta mit Hähnchen und Tomatensauce (fettarm)", "ingredients": "190g Hühnerbrust, 80g Penne (roh), 200g passierte Tomaten, 80g Zwiebel, Knoblauch, Basilikum, 1 TL Olivenöl", "kcal": 920, "p": 100, "k": 72, "f": 20}},
+  {"dt": "2026-05-28", "wk": 7, "ph": "Feinschliff", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Oberkörper Supersätze", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Gegrilltes Hähnchen mit Linsensalat und Zitrone", "ingredients": "210g Hühnerbrust, 80g grüne Linsen (roh), 80g Tomate, 60g Gurke, 50g rote Zwiebel, 1 TL Olivenöl, Zitrone, Petersilie, Kreuzkümmel", "kcal": 1060, "p": 106, "k": 72, "f": 30}, "tot": {"kcal": 1808, "p": 177, "k": 124, "f": 64}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Marokkanische Hähnchen-Gemüse-Tajine mit Couscous", "ingredients": "200g Hühnerbrust, 70g Couscous (roh), 100g Zucchini, 80g Kichererbsen, 80g Zwiebel, Ras el-Hanout, Zimt, 1 TL Olivenöl", "kcal": 1050, "p": 106, "k": 76, "f": 26}, "di3": {"name": "Rindfleisch-Fajita-Bowl mit Reis und Paprika", "ingredients": "180g mageres Rindfleisch, 80g Reis (roh), 100g Paprika, 80g Zwiebel, 60g Tomate, Limette, Koriander, Kreuzkümmel, 1 TL Olivenöl", "kcal": 1040, "p": 100, "k": 72, "f": 34}},
+  {"dt": "2026-05-29", "wk": 7, "ph": "Feinschliff", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "34 Min", "exercises": ["HIIT Laufbahn — 6 Intervalle", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g, Za'atar+Sumac+Chili)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}, "tot": {"kcal": 1588, "p": 177, "k": 101, "f": 48}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Caesar-Salat mit Parmesan", "ingredients": "220g Hühnerbrust, 150g Romana-Salat, 20g Parmesan, 40g Ciabatta-Croutons, Knoblauch, Zitrone, 1 TL Olivenöl, Senf, Worcestershire", "kcal": 880, "p": 106, "k": 30, "f": 28}, "di3": {"name": "Zucchini-Nudeln mit Rindfleisch-Bolognese", "ingredients": "200g mageres Rindfleisch-Hackfleisch, 300g Zucchini (spiralisiert), 150g passierte Tomaten, 80g Zwiebel, Knoblauch, Oregano, Basilikum, 1 TL Olivenöl", "kcal": 940, "p": 100, "k": 24, "f": 44}},
+  {"dt": "2026-05-30", "wk": 7, "ph": "Feinschliff", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Lamm-Loin-Steak mit schwarzem Knoblauch & Minze-Relish", "ingredients": "300g Lamm-Loin, schwarzer Knoblauch (1,5 EL), frische Minze (20g), Olivenöl, Zitrone, Sumac", "kcal": 1440, "p": 125, "k": 12, "f": 100, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1800, "p": 176, "k": 45, "f": 106}, "beer": true, "sup": {"creatine_dose": "5g"}},
+  {"dt": "2026-05-31", "wk": 7, "ph": "Feinschliff", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Türkische Linsensuppe mit Hähnchen", "ingredients": "180g Hühnerbrust, 80g rote Linsen (roh), 100g Karotten, 80g Zwiebel, Kreuzkümmel, Paprika, 1 TL Olivenöl, Zitrone", "kcal": 960, "p": 98, "k": 72, "f": 22}, "tot": {"kcal": 1749, "p": 170, "k": 130, "f": 58}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Pho mit Reisnudeln", "ingredients": "200g Hühnerbrust, 80g Reisnudeln (roh), 750ml klare Brühe, 80g Frühlingszwiebel, Koriander, Limette, Ginger, Fischsauce, Chili", "kcal": 920, "p": 100, "k": 62, "f": 18}, "di3": {"name": "Gegrilltes Hähnchen mit Couscous und gegrilltem Gemüse", "ingredients": "210g Hühnerbrust, 80g Couscous (roh), 100g Zucchini, 100g Paprika, 80g Aubergine, 1 TL Olivenöl, Zitrone, Kräuter", "kcal": 990, "p": 104, "k": 70, "f": 24}},
+  {"dt": "2026-06-01", "wk": 7, "ph": "Feinschliff", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Unterkörper Supersätze", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Hähnchen-Gemüse-Eintopf mit Kartoffeln", "ingredients": "190g Hühnerbrust, 150g Kartoffel, 100g Karotten, 80g Zucchini, 80g Zwiebel, 400ml Brühe, Thymian, Lorbeer", "kcal": 890, "p": 98, "k": 72, "f": 16}, "tot": {"kcal": 1760, "p": 174, "k": 125, "f": 60}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Nudeln mit Chili-Öl, Hähnchen und Frühlingszwiebeln", "ingredients": "190g Hühnerbrust, 80g Nudeln (roh), 80g Frühlingszwiebel, 1 TL Chili-Öl, Sojasauce, Knoblauch, Essig, Sesam", "kcal": 920, "p": 100, "k": 70, "f": 20}, "di3": {"name": "Reis mit pochiertem Hähnchen und Ingwer-Brühe", "ingredients": "200g Hühnerbrust (pochiert), 90g Reis (roh), 400ml Brühe, Ginger (3cm), Frühlingszwiebel, Sojasauce, Koriander", "kcal": 940, "p": 102, "k": 74, "f": 18}},
+  {"dt": "2026-06-02", "wk": 7, "ph": "Feinschliff", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["Ganzkörper Supersets mit Intensitäts-Techniken", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Paprika+Knoblauch+Limette)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Rindfleisch-Fajitas-Bowl (ohne Tortilla)", "ingredients": "200g Rindfleisch (Streifen), 120g Paprika, 80g Zwiebel, 60g Avocado, 80g Tomate, Limette, Koriander, Kreuzkümmel, Chili", "kcal": 1020, "p": 100, "k": 22, "f": 54}, "tot": {"kcal": 1708, "p": 169, "k": 109, "f": 66}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Lamm-Burger (ohne Brötchen) mit Tzatziki und Salat", "ingredients": "200g Lamm-Hackfleisch, 150g gemischter Salat, 80g Gurke, 80g Tomate, 80g Skyr, Knoblauch, Dill, Minze, Kreuzkümmel", "kcal": 980, "p": 100, "k": 18, "f": 50}, "di3": {"name": "Hähnchen-Spinat-Pfanne mit Champignons", "ingredients": "220g Hühnerbrust, 200g Spinat, 150g Champignons, 80g Zwiebel, Knoblauch, 1 TL Olivenöl, Muskatnuss, Zitrone", "kcal": 840, "p": 108, "k": 18, "f": 24}},
+  {"dt": "2026-06-03", "wk": 7, "ph": "Feinschliff", "dn": "Mittwoch", "tr": {"type": "Tempo-Lauf", "duration": "50 Min", "exercises": ["Tempo-Lauf Laufpfad", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Reis-Bowl mit Teriyaki-Hähnchen und Edamame", "ingredients": "200g Hühnerbrust, 80g Reis (roh), 60g Edamame, 80g Gurke, Teriyaki-Sauce (2 TL Soja+Mirin), Sesam, Ginger", "kcal": 1010, "p": 104, "k": 70, "f": 26}, "tot": {"kcal": 1799, "p": 176, "k": 128, "f": 62}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Quinoa-Salat mit Hähnchen, Kichererbsen und Spinat", "ingredients": "200g Hühnerbrust, 100g Quinoa (roh), 80g Kichererbsen (gekocht), 100g Spinat, 80g Tomate, 1 TL Olivenöl, Zitrone, Kreuzkümmel", "kcal": 1020, "p": 102, "k": 68, "f": 28}, "di3": {"name": "Soba-Nudelsalat mit Hähnchen und Gurke", "ingredients": "200g Hühnerbrust, 100g Soba-Nudeln (roh), 120g Gurke, 60g Karotten, 2 TL Sojasauce, 1 TL Sesamöl, Ginger, Limette, Sesam", "kcal": 980, "p": 100, "k": 70, "f": 24}},
+  {"dt": "2026-06-04", "wk": 8, "ph": "Feinschliff", "dn": "Donnerstag", "tr": {"type": "Training", "duration": "55 Min", "exercises": ["Oberkörper Supersätze (maximale Intensität)", "Rudermaschine Steady-State"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Roasted Chickpeas (200g, Harissa+Pomegranate)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Hähnchen mit Pesto, Tomaten und geröstetem Gemüse", "ingredients": "220g Hühnerbrust, 150g Zucchini, 100g Paprika, 100g Kirschtomaten, 2 TL Pesto, Knoblauch, Basilikum", "kcal": 900, "p": 108, "k": 20, "f": 32}, "tot": {"kcal": 1588, "p": 177, "k": 107, "f": 44}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Hähnchen-Caesar-Salat mit Parmesan", "ingredients": "220g Hühnerbrust, 150g Romana-Salat, 20g Parmesan, 40g Ciabatta-Croutons, Knoblauch, Zitrone, 1 TL Olivenöl, Senf, Worcestershire", "kcal": 880, "p": 106, "k": 30, "f": 28}, "di3": {"name": "Zucchini-Nudeln mit Rindfleisch-Bolognese", "ingredients": "200g mageres Rindfleisch-Hackfleisch, 300g Zucchini (spiralisiert), 150g passierte Tomaten, 80g Zwiebel, Knoblauch, Oregano, Basilikum, 1 TL Olivenöl", "kcal": 940, "p": 100, "k": 24, "f": 44}},
+  {"dt": "2026-06-05", "wk": 8, "ph": "Feinschliff", "dn": "Freitag", "tr": {"type": "HIIT", "duration": "34 Min", "exercises": ["HIIT Laufbahn — 7 Intervalle", "Indoor-Alternative"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Ei", "kcal": 510, "p": 25, "k": 20, "f": 38}, "di": {"name": "Mageres Rindfleisch mit Reis und Brühe (Gyudon light)", "ingredients": "170g mageres Rindfleisch (dünn), 90g Reis (roh), 100g Zwiebel, 300ml Dashi, Sojasauce, Mirin, Ginger", "kcal": 950, "p": 96, "k": 76, "f": 26}, "tot": {"kcal": 1820, "p": 172, "k": 129, "f": 70}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Reis mit pochiertem Hähnchen und Ingwer-Brühe", "ingredients": "200g Hühnerbrust (pochiert), 90g Reis (roh), 400ml Brühe, Ginger (3cm), Frühlingszwiebel, Sojasauce, Koriander", "kcal": 940, "p": 102, "k": 74, "f": 18}, "di3": {"name": "Hähnchen-Gemüse-Eintopf mit Kartoffeln", "ingredients": "190g Hühnerbrust, 150g Kartoffel, 100g Karotten, 80g Zucchini, 80g Zwiebel, 400ml Brühe, Thymian, Lorbeer", "kcal": 890, "p": 98, "k": 72, "f": 16}},
+  {"dt": "2026-06-06", "wk": 8, "ph": "Feinschliff", "dn": "Samstag", "tr": {"type": "Ruhetag", "duration": "0 Min", "exercises": [], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Gegrilltes Rindfleisch Prime-Cut mit Harissa-Öl & Rucola (Finale Mahlzeit)", "ingredients": "320g Prime Rib-Steak, 100g Rucola, 3 TL Harissa-Olivenöl, Sumac, Zitrone", "kcal": 1510, "p": 130, "k": 15, "f": 106, "time": "17:30", "type": "Frühdinner"}, "tot": {"kcal": 1870, "p": 181, "k": 48, "f": 112}, "beer": true, "sup": {"creatine_dose": "5g"}},
+  {"dt": "2026-06-07", "wk": 8, "ph": "Feinschliff", "dn": "Sonntag", "tr": {"type": "Aktive Erholung", "duration": "40 Min", "exercises": ["Aktive Erholung – Laufpfad"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Geröstete Kichererbsen (200g, Cumin+Limette+Chili)", "kcal": 328, "p": 18, "k": 54, "f": 6}, "di": {"name": "Lamm-Burger (ohne Brötchen) mit Tzatziki und Salat", "ingredients": "200g Lamm-Hackfleisch, 150g gemischter Salat, 80g Gurke, 80g Tomate, 80g Skyr, Knoblauch, Dill, Minze, Kreuzkümmel", "kcal": 980, "p": 100, "k": 18, "f": 50}, "tot": {"kcal": 1668, "p": 169, "k": 105, "f": 62}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Gegrillte Lammspieße mit Harissa-Skyr und Rucola", "ingredients": "200g Lamm (Würfel), 100g Rucola, 80g Tomate, 80g Skyr, 1 TL Harissa, Zitrone, Minze, Sumac", "kcal": 1000, "p": 104, "k": 16, "f": 50}, "di3": {"name": "Hähnchen-Caprese mit Pesto und Rucola", "ingredients": "210g Hühnerbrust, 120g Mozzarella-light, 150g Tomaten, 50g Rucola, 1 TL Pesto, Basilikum, Balsamico", "kcal": 900, "p": 108, "k": 14, "f": 36}},
+  {"dt": "2026-06-08", "wk": 8, "ph": "Feinschliff", "dn": "Montag", "tr": {"type": "Training", "duration": "60 Min", "exercises": ["Unterkörper Supersätze (finale Intensität)", "Rudermaschine Intervalle"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Edamame + Nüsse", "kcal": 388, "p": 20, "k": 19, "f": 28}, "di": {"name": "Rindfleisch-Fajita-Bowl mit Reis und Paprika", "ingredients": "180g mageres Rindfleisch, 80g Reis (roh), 100g Paprika, 80g Zwiebel, 60g Tomate, Limette, Koriander, Kreuzkümmel, 1 TL Olivenöl", "kcal": 1040, "p": 100, "k": 72, "f": 34}, "tot": {"kcal": 1788, "p": 171, "k": 124, "f": 68}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Rindfleisch-Nudel-Bowl mit Erdnuss-Limette", "ingredients": "180g mageres Rindfleisch, 80g Reisnudeln (roh), 80g Gurke, 60g Karotten, 15g Erdnüsse, Limette, Koriander, Sojasauce, Chili", "kcal": 1050, "p": 100, "k": 68, "f": 36}, "di3": {"name": "Mediterrane Hähnchen-Bowl mit Farro und Oliven", "ingredients": "200g Hühnerbrust, 80g Farro (roh), 80g Kirschtomaten, 60g Gurke, 30g Kalamata-Oliven, Zitrone, Oregano, 1 TL Olivenöl", "kcal": 1030, "p": 104, "k": 72, "f": 32}},
+  {"dt": "2026-06-09", "wk": 8, "ph": "Feinschliff", "dn": "Dienstag", "tr": {"type": "HIIT", "duration": "55 Min", "exercises": ["Ganzkörper Supersets (intensivster Tag)", "Rudermaschine HIIT"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": {"name": "Cashew + Edamame", "kcal": 429, "p": 21, "k": 25, "f": 30}, "di": {"name": "Hähnchen-Wrap-Bowl mit Reis und schwarzen Bohnen", "ingredients": "200g Hühnerbrust, 80g Reis (roh), 60g schwarze Bohnen, 80g Paprika, 60g Tomate, Limette, Koriander, Kreuzkümmel, 1 TL Olivenöl", "kcal": 1000, "p": 102, "k": 72, "f": 24}, "tot": {"kcal": 1789, "p": 174, "k": 130, "f": 60}, "beer": false, "sup": {"creatine_dose": "5g"}, "di2": {"name": "Rindfleisch-Pho (klar, mager)", "ingredients": "200g mageres Rindfleisch (dünn), 80g Reisnudeln (roh), 750ml Brühe, 80g Frühlingszwiebel, Koriander, Limette, Fischsauce", "kcal": 960, "p": 98, "k": 60, "f": 30}, "di3": {"name": "Huhn-Bulgur-Bowl mit Tahini-Zitrone", "ingredients": "200g Hühnerbrust, 80g Bulgur (roh), 100g Gurke, 80g Tomate, 50g Rucola, 1 TL Tahini, Zitrone, Sumac", "kcal": 970, "p": 102, "k": 66, "f": 26}},
+  {"dt": "2026-06-10", "wk": 8, "ph": "Feinschliff", "dn": "Mittwoch", "tr": {"type": "Recovery", "duration": "0 Min", "exercises": ["Regeneration — Plan abgeschlossen"], "indoorAlt": null}, "sh": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "sn": null, "di": {"name": "Post-Plan: Regenerationstag", "ingredients": "", "kcal": 0, "p": 0, "k": 0, "f": 0}, "tot": {"kcal": 360, "p": 51, "k": 33, "f": 6}, "beer": false, "sup": {"creatine_dose": "5g"}}
+];
+const TRAIN = [
+  {"date": "2026-04-16", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Bankdrücken (30kg): 4×15-20, Tempo 3-1-1, 75 Sek Pause"}, {"raw": "Rudern Langhantel (30kg): 4×15-20, Tempo 3-1-1, 75 Sek"}, {"raw": "Schulterdrücken KH (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "Rudermaschine Steady-State: 22 Min, Puls 130–150, konstantes Tempo"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-17", "duration": "~23 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Einstieg — kurze Intervalle):"}, {"raw": "Warm-up: 8 Min easy jog, langsam steigern"}, {"raw": "3 Intervalle: Laufen bis Puls 137–150 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 120 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 3 Intervalle — Rudern bis Puls 137–150 bpm, Recovery bis unter 120 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-04-18", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-19", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 38 Min easy jog, Puls 110–130, konstantes Tempo"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 32 Min, easy pace, Puls 100–120"}], "hasIndoorAlt": true},
+  {"date": "2026-04-20", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Kniebeugen (30kg): 4×15-20, Tempo 3-1-1, 75 Sek Pause"}, {"raw": "Rumänisches Kreuzheben (30kg): 4×15-20, Tempo 3-1-1, 75 Sek"}, {"raw": "Beinheben (hängend): 4×15-20, 60 Sek"}, {"raw": "Rudermaschine Intervalle: 15 Min — 3 × (3 Min Hart Puls 145–160 / 2 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-21", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "KH-Ausfallschritte (je 7kg): 4×15-20 pro Bein, Tempo 3-1-1, 60 Sek"}, {"raw": "KH-Reihen (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "KH-Floorpress (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "Rudermaschine HIIT: 16 Min — 8 × (1,5 Min All-Out / 1 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-22", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min easy"}, {"raw": "4 × 4 Min @ 75–80% Max | 2 Min Recovery jog"}, {"raw": "Cool-down: 5 Min easy"}, {"raw": "Total: 48 Min"}], "indoor": [{"raw": "Rudermaschine, 35 Min moderate Intensität, Puls 130–150"}], "hasIndoorAlt": true},
+  {"date": "2026-04-23", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Bankdrücken (30kg): 4×15-20, Tempo 3-1-1, 75 Sek Pause"}, {"raw": "Rudern Langhantel (30kg): 4×15-20, Tempo 3-1-1, 75 Sek"}, {"raw": "Schulterdrücken KH (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "Rudermaschine Steady-State: 23 Min, Puls 135–155"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-24", "duration": "~26 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Aufbau — 4 Intervalle):"}, {"raw": "Warm-up: 7 Min easy jog, langsam steigern"}, {"raw": "4 Intervalle: Laufen bis Puls 140–153 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 120 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 4 Intervalle — Rudern bis Puls 140–153 bpm, Recovery bis unter 120 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-04-25", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-26", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 39 Min easy, Puls 112–132"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 33 Min, easy, Puls 102–122"}], "hasIndoorAlt": true},
+  {"date": "2026-04-27", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Kniebeugen (30kg): 4×15-20, Tempo 3-1-1, 75 Sek Pause"}, {"raw": "Rumänisches Kreuzheben (30kg): 4×15-20, Tempo 3-1-1, 75 Sek"}, {"raw": "Beinheben: 4×15-20, 60 Sek"}, {"raw": "Rudermaschine Intervalle: 16 Min — 4 × (3 Min Hart / 2 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-28", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "KH-Ausfallschritte (je 7kg): 4×15-20 pro Bein, Tempo 3-1-1, 60 Sek"}, {"raw": "KH-Reihen (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "KH-Floorpress (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "Rudermaschine HIIT: 16 Min — 8 × (1,5 Min All-Out / 1 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-04-29", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min"}, {"raw": "5 × 4 Min @ 76–81% Max | 2 Min Recovery"}, {"raw": "Cool-down: 5 Min"}], "indoor": [{"raw": "Rudermaschine, 35 Min moderate, Puls 132–152"}], "hasIndoorAlt": true},
+  {"date": "2026-04-30", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Bankdrücken (30kg): 4×15-20, Tempo 3-1-1, 75 Sek Pause"}, {"raw": "Rudern Langhantel (30kg): 4×15-20, Tempo 3-1-1, 75 Sek"}, {"raw": "Schulterdrücken KH (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "Rudermaschine Steady-State: 24 Min, Puls 138–158"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-01", "duration": "~25 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Aufbau — Intensität steigt):"}, {"raw": "Warm-up: 6 Min easy jog, langsam steigern"}, {"raw": "4 Intervalle: Laufen bis Puls 142–155 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 118 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 4 Intervalle — Rudern bis Puls 142–155 bpm, Recovery bis unter 118 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-05-02", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-03", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 40 Min easy, Puls 113–133"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 34 Min, easy, Puls 103–123"}], "hasIndoorAlt": true},
+  {"date": "2026-05-04", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Kniebeugen (30kg): 4×15-20, Tempo 3-1-1, 75 Sek Pause"}, {"raw": "Rumänisches Kreuzheben (30kg): 4×15-20, Tempo 3-1-1, 75 Sek"}, {"raw": "Beinheben: 4×15-20, 60 Sek"}, {"raw": "Rudermaschine Intervalle: 17 Min — 4 × (3,5 Min Hart / 2 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-05", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "KH-Ausfallschritte (je 7kg): 4×15-20 pro Bein, Tempo 3-1-1, 60 Sek"}, {"raw": "KH-Reihen (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "KH-Floorpress (je 7kg): 4×15-20, Tempo 3-1-1, 60 Sek"}, {"raw": "Rudermaschine HIIT: 17 Min — 8 × (1,5 Min All-Out / 1 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-06", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min"}, {"raw": "5 × 4 Min @ 77–82% Max | 2 Min Recovery"}, {"raw": "Cool-down: 5 Min"}], "indoor": [{"raw": "Rudermaschine, 36 Min moderate, Puls 134–154"}], "hasIndoorAlt": true},
+  {"date": "2026-05-07", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Bankdrücken (30kg): 5×20-25 bis Muskelversagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Rudern Langhantel (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Schulterdrücken KH (je 7kg): 5×20-25 bis Versagen, Tempo 3-1-2, 45 Sek"}, {"raw": "Rudermaschine Steady-State: 23 Min, Puls 140–160"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-08", "duration": "~28 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Peak — 5 Intervalle):"}, {"raw": "Warm-up: 5 Min easy jog, langsam steigern"}, {"raw": "5 Intervalle: Laufen bis Puls 145–158 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 118 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 5 Intervalle — Rudern bis Puls 145–158 bpm, Recovery bis unter 118 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-05-09", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-10", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 40 Min easy, Puls 114–134"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 34 Min, easy, Puls 104–124"}], "hasIndoorAlt": true},
+  {"date": "2026-05-11", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Kniebeugen (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Rumänisches Kreuzheben (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Beinheben (hängend, langsam): 4×20-25, 45 Sek"}, {"raw": "Rudermaschine Intervalle: 18 Min — 5 × (3 Min Hart Puls 154–165 / 1,5 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-12", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "KH-Ausfallschritte (je 7kg): 4×20-25 pro Bein, Tempo 3-1-2, 45 Sek"}, {"raw": "KH-Reihen (je 7kg): 5×20-25 bis Versagen, Tempo 3-1-2, 45 Sek"}, {"raw": "KH-Floorpress (je 7kg): 4×20-25, Tempo 3-1-2, 45 Sek"}, {"raw": "Rudermaschine HIIT: 18 Min — 8 × (1,5 Min All-Out / 1 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-13", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min"}, {"raw": "6 × 3,5 Min @ 78–83% Max | 1,5 Min Recovery"}, {"raw": "Cool-down: 5 Min"}], "indoor": [{"raw": "Rudermaschine, 37 Min moderate, Puls 135–155"}], "hasIndoorAlt": true},
+  {"date": "2026-05-14", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Bankdrücken (30kg): 5×20-25 bis Muskelversagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Rudern Langhantel (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Schulterdrücken KH (je 7kg): 5×20-25 bis Versagen, Tempo 3-1-2, 45 Sek"}, {"raw": "Rudermaschine Steady-State: 24 Min, Puls 142–162"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-15", "duration": "~28 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Peak — höhere Schwelle):"}, {"raw": "Warm-up: 5 Min easy jog, langsam steigern"}, {"raw": "5 Intervalle: Laufen bis Puls 148–160 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 115 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 5 Intervalle — Rudern bis Puls 148–160 bpm, Recovery bis unter 115 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-05-16", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-17", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 41 Min easy, Puls 115–135"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 35 Min, easy, Puls 105–125"}], "hasIndoorAlt": true},
+  {"date": "2026-05-18", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Kniebeugen (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Rumänisches Kreuzheben (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Beinheben (hängend, langsam): 4×20-25, 45 Sek"}, {"raw": "Rudermaschine Intervalle: 19 Min — 5 × (3,5 Min Hart Puls 157–167 / 1,5 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-19", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "KH-Ausfallschritte (je 7kg): 4×20-25 pro Bein, Tempo 3-1-2, 45 Sek"}, {"raw": "KH-Reihen (je 7kg): 5×20-25 bis Versagen, Tempo 3-1-2, 45 Sek"}, {"raw": "KH-Floorpress (je 7kg): 4×20-25, Tempo 3-1-2, 45 Sek"}, {"raw": "Rudermaschine HIIT: 19 Min — 8 × (2 Min All-Out / 1 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-20", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min"}, {"raw": "6 × 4 Min @ 79–84% Max | 1,5 Min Recovery"}, {"raw": "Cool-down: 5 Min"}], "indoor": [{"raw": "Rudermaschine, 37 Min moderate, Puls 136–156"}], "hasIndoorAlt": true},
+  {"date": "2026-05-21", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Bankdrücken (30kg): 5×20-25 bis Muskelversagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Rudern Langhantel (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Schulterdrücken KH (je 7kg): 5×20-25 bis Versagen, Tempo 3-1-2, 45 Sek"}, {"raw": "Rudermaschine Steady-State: 25 Min, Puls 144–164"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-22", "duration": "~32 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Peak — maximale Kapazität):"}, {"raw": "Warm-up: 5 Min easy jog, langsam steigern"}, {"raw": "6 Intervalle: Laufen bis Puls 150–163 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 115 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 6 Intervalle — Rudern bis Puls 150–163 bpm, Recovery bis unter 115 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-05-23", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-24", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 42 Min easy, Puls 116–136"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 36 Min, easy, Puls 106–126"}], "hasIndoorAlt": true},
+  {"date": "2026-05-25", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Kniebeugen (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Rumänisches Kreuzheben (30kg): 5×20-25 bis Versagen, Tempo 3-1-2, 60 Sek"}, {"raw": "Beinheben (hängend, Tempo 4-1-2): 4×20-25, 45 Sek"}, {"raw": "Rudermaschine Intervalle: 20 Min — 6 × (3 Min Hart Puls 159–168 / 1,5 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-26", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "KH-Ausfallschritte (je 7kg): 4×20-25 pro Bein, Tempo 3-1-2, 45 Sek"}, {"raw": "KH-Reihen (je 7kg): 5×20-25 bis Versagen, Tempo 3-1-2, 45 Sek"}, {"raw": "KH-Floorpress (je 7kg): 4×20-25, Tempo 3-1-2, 45 Sek"}, {"raw": "Rudermaschine HIIT: 20 Min — 8 × (2 Min All-Out / 1 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-27", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min"}, {"raw": "7 × 3,5 Min @ 80–85% Max | 1,5 Min Recovery"}, {"raw": "Cool-down: 5 Min"}], "indoor": [{"raw": "Rudermaschine, 38 Min moderate-hart, Puls 138–158"}], "hasIndoorAlt": true},
+  {"date": "2026-05-28", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Oberkörper Supersätze:"}, {"raw": "Bankdrücken + Reihen (30kg): 4 × (20-25 + 20-25), Tempo 3-1-1, 90 Sek"}, {"raw": "Schulterdrücken + KH-Pullover (7kg): 4 × (20-25 + 20-25), 60 Sek"}, {"raw": "Rudermaschine Steady-State: 23 Min, Puls 145–165"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-29", "duration": "~28 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Feinschliff — kontrolliert):"}, {"raw": "Warm-up: 5 Min easy jog, langsam steigern"}, {"raw": "5 Intervalle: Laufen bis Puls 145–158 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 118 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 5 Intervalle — Rudern bis Puls 145–158 bpm, Recovery bis unter 118 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-05-30", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-05-31", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 42 Min easy, Puls 117–137"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 36 Min, easy, Puls 107–127"}], "hasIndoorAlt": true},
+  {"date": "2026-06-01", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Unterkörper Supersätze:"}, {"raw": "Kniebeugen + Kreuzheben (30kg): 4 × (20-25 + 20-25), Tempo 3-1-1, 90 Sek"}, {"raw": "Beinheben + Wadenheben: 4 × (20-25 + 25-30), 30 Sek"}, {"raw": "Rudermaschine Intervalle: 18 Min — 5 × (3 Min Hart Puls 157–167 / 2 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-06-02", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "Ganzkörper Supersets mit Intensitäts-Techniken:"}, {"raw": "KH-Ausfallschritte + KH-Reihen (je 7kg): 4 × (20-25 + 20-25), Tempo 4-1-1, 45 Sek"}, {"raw": "KH-Floorpress + KH-Pullover (je 7kg): 4 × (20-25 + 20-25), Tempo 3-1-1, 30 Sek, Dropset letzter Satz"}, {"raw": "Rudermaschine HIIT: 18 Min — 7 × (1,5 Min All-Out / 1,5 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-06-03", "duration": "50 Min", "type": "Tempo-Lauf", "outdoor": [{"raw": "Tempo-Lauf Laufpfad:"}, {"raw": "Warm-up: 5 Min"}, {"raw": "5 × 5 Min @ 81–86% Max | 1,5 Min Recovery"}, {"raw": "Cool-down: 5 Min"}], "indoor": [{"raw": "Rudermaschine, 38 Min moderate-hart, Puls 139–159"}], "hasIndoorAlt": true},
+  {"date": "2026-06-04", "duration": "55 Min", "type": "Kraft (Oberkörper)", "outdoor": [{"raw": "Oberkörper Supersätze (maximale Intensität):"}, {"raw": "Bankdrücken + Reihen (30kg): 4 × (20-25 + 20-25), Tempo 3-1-1, 90 Sek"}, {"raw": "Schulterdrücken + KH-Pullover (7kg): 4 × (20-25 + 20-25), 60 Sek"}, {"raw": "Rudermaschine Steady-State: 23 Min, Puls 147–167"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-06-05", "duration": "~28 Min", "type": "HIIT", "outdoor": [{"raw": "HR-gesteuertes HIIT (Feinschliff — finale Intensität):"}, {"raw": "Warm-up: 5 Min easy jog, langsam steigern"}, {"raw": "5 Intervalle: Laufen bis Puls 148–160 bpm erreicht"}, {"raw": "Recovery: Gehen/leichtes Joggen bis Puls unter 115 bpm"}, {"raw": "Cool-down: 3 Min easy jog + Dehnen"}], "indoor": [{"raw": "Rudermaschine HR-HIIT: 5 Intervalle — Rudern bis Puls 148–160 bpm, Recovery bis unter 115 bpm"}], "hasIndoorAlt": true},
+  {"date": "2026-06-06", "duration": "0 Min", "type": "Ruhetag", "outdoor": [], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-06-07", "duration": "40 Min", "type": "Aktive Erholung", "outdoor": [{"raw": "Aktive Erholung – Laufpfad:"}, {"raw": "Outdoor: 42 Min easy, Puls 118–138"}], "indoor": [{"raw": "Indoor-Alternative: Rudermaschine 36 Min, easy, Puls 108–128"}], "hasIndoorAlt": true},
+  {"date": "2026-06-08", "duration": "60 Min", "type": "Kraft (Unterkörper)", "outdoor": [{"raw": "Unterkörper Supersätze (finale Intensität):"}, {"raw": "Kniebeugen + Kreuzheben (30kg): 4 × (20-25 + 20-25), Tempo 3-1-1, 90 Sek"}, {"raw": "Beinheben + Wadenheben: 4 × (20-25 + 25-30), 30 Sek"}, {"raw": "Rudermaschine Intervalle: 20 Min — 6 × (3 Min Hart Puls 161–170 / 1,5 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-06-09", "duration": "55 Min", "type": "Kraft (Ganzkörper)", "outdoor": [{"raw": "Ganzkörper Supersets (intensivster Tag):"}, {"raw": "KH-Ausfallschritte + KH-Reihen (je 7kg): 4 × (20-25 + 20-25), Tempo 4-1-1, 45 Sek"}, {"raw": "KH-Floorpress + KH-Pullover (je 7kg): 4 × (20-25 + 20-25), Tempo 3-1-1, 30 Sek, Dropset letzter Satz"}, {"raw": "Rudermaschine HIIT: 19 Min — 8 × (1,5 Min All-Out / 1,5 Min Recovery)"}], "indoor": [], "hasIndoorAlt": false},
+  {"date": "2026-06-10", "duration": "0 Min", "type": "Recovery", "outdoor": [], "indoor": [], "hasIndoorAlt": false}
+];  </script>
+
+  <!-- APP CODE -->
+  <script type="text/babel">
+    const { useState, useMemo, useCallback, useEffect } = React;
+    const { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } = Recharts || {};
+
+    // ─── CONSTANTS ───
+    const BEER_KCAL = 1500;
+    const BREAKFAST_SHAKE = { kcal: 360, p: 51, k: 33, f: 6 };
+    const BREAKFAST_TORTILLA = { kcal: 576, p: 42, k: 44, f: 27 };
+    const SNACK_LIGHT = { name: "Edamame (120g, gekocht)", kcal: 170, p: 17, k: 12, f: 6 };
+    const DINNER_SUPPLEMENTS = "Omega-3, Vitamin D3, K2, Zink";
+    const BEDTIME_SUPPLEMENT = "Magnesium";
+
+    const PHASE_COLORS = {
+      "Aufbau": { bg: "bg-blue-600", text: "text-white", hex: "#3B82F6" },
+      "Peak": { bg: "bg-amber-600", text: "text-white", hex: "#F59E0B" },
+      "Feinschliff": { bg: "bg-red-600", text: "text-white", hex: "#EF4444" }
+    };
+
+    const WEEK_PHASES = [
+      { wk: 1, ph: "Aufbau" }, { wk: 2, ph: "Aufbau" }, { wk: 3, ph: "Aufbau" },
+      { wk: 4, ph: "Peak" }, { wk: 5, ph: "Peak" }, { wk: 6, ph: "Peak" },
+      { wk: 7, ph: "Feinschliff" }, { wk: 8, ph: "Feinschliff" }
+    ];
+    const WEEK_START_INDEX = WEEK_PHASES.map(wp => RAW.findIndex(d => d.wk === wp.wk));
+
+    const TRAINING_ICONS = {
+      "Training": "\u{1F3CB}\uFE0F", "Kraft (Oberkörper)": "\u{1F3CB}\uFE0F",
+      "Kraft (Unterkörper)": "\u{1F9B5}", "Kraft (Ganzkörper)": "\u{1F4AA}",
+      "HIIT": "\u{1F525}", "Tempo-Lauf": "\u{1F3C3}",
+      "Aktive Erholung": "\u2600\uFE0F", "Ruhetag": "\u{1F634}", "Recovery": "\u{1F389}"
+    };
+
+    // ─── HELPERS ───
+    function formatDate(dateStr) {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      const date = new Date(y, m - 1, d);
+      return ["So","Mo","Di","Mi","Do","Fr","Sa"][date.getDay()] + " " + d + "." + String(m).padStart(2,"0");
+    }
+
+    function findTodayIndex() {
+      const n = new Date();
+      const t = n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
+      const i = RAW.findIndex(d => d.dt === t);
+      return i >= 0 ? i : 0;
+    }
+
+    // ─── RUNTIME TOTALS ───
+    function calcDayTotals(dayIndex, skippedMeals, customMeals, breakfastTypes, dinnerChoices) {
+      const d = RAW[dayIndex];
+      if (!d) return { kcal: 0, p: 0, k: 0, f: 0 };
+      const isTortilla = breakfastTypes[dayIndex] === 'tortilla';
+      let t = { kcal: 0, p: 0, k: 0, f: 0 };
+      const add = (m) => { t.kcal += m.kcal; t.p += m.p; t.k += m.k; t.f += m.f; };
+
+      // Breakfast
+      if (d.sh && !skippedMeals[dayIndex + "_sh"]) {
+        add(isTortilla ? BREAKFAST_TORTILLA : d.sh);
+      }
+      // Snack
+      if (!skippedMeals[dayIndex + "_sn"]) {
+        if (isTortilla) { add(SNACK_LIGHT); }
+        else if (d.sn) { add(d.sn); }
+      }
+      // Dinner (use selected option)
+      const diOpts = [d.di, d.di2, d.di3].filter(Boolean);
+      const diChoice = diOpts[(dinnerChoices || {})[dayIndex] || 0] || d.di;
+      if (diChoice && !skippedMeals[dayIndex + "_di"]) { add(diChoice); }
+      // Custom meals
+      Object.entries(customMeals).forEach(([k, v]) => {
+        if (k.startsWith(dayIndex + "_")) add(v);
+      });
+      // Beer (display only)
+      if (d.beer) t.kcal += BEER_KCAL;
+
+      return { kcal: Math.round(t.kcal), p: Math.round(t.p), k: Math.round(t.k), f: Math.round(t.f) };
+    }
+
+    // ─── PERSISTED STATE ───
+    function usePersistedState(key, defaultValue) {
+      const [state, setState] = useState(() => {
+        try { const s = localStorage.getItem('fitness_' + key); return s ? JSON.parse(s) : defaultValue; }
+        catch { return defaultValue; }
+      });
+      useEffect(() => { localStorage.setItem('fitness_' + key, JSON.stringify(state)); }, [state, key]);
+      return [state, setState];
+    }
+
+    // ─── SUB-COMPONENTS ───
+    function MealCard({ time, label, name, ingredients, macros, color, border, expanded, onToggle, skipped, onSkip, supplement }) {
+      return (
+        <div className={`${color} rounded-xl p-4 border ${border} cursor-pointer transition-all relative ${skipped ? "opacity-40" : ""}`} onClick={onToggle}>
+          {skipped && <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"><span className="text-gray-400 text-xs font-medium bg-gray-900/80 px-3 py-1 rounded-full">Übersprungen</span></div>}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span style={{fontSize:12}}>🕐</span>
+                <span className="text-gray-400 text-xs">{time}</span>
+                <span className="text-gray-500 text-xs">·</span>
+                <span className="text-gray-300 text-xs font-medium">{label}</span>
+              </div>
+              <p className="text-white text-sm font-medium leading-snug">{name}</p>
+            </div>
+            <div className="flex items-center gap-2 ml-3">
+              <span className="text-gray-300 text-sm font-mono whitespace-nowrap">{macros.kcal}</span>
+              {onSkip && <button onClick={(e) => { e.stopPropagation(); onSkip(); }}
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${skipped ? "bg-green-700 hover:bg-green-600 text-white" : "bg-gray-700 hover:bg-red-700 text-gray-400 hover:text-white"}`}
+                title={skipped ? "Wieder hinzufügen" : "Überspringen"}>
+                {skipped ? "+" : "×"}
+              </button>}
+            </div>
+          </div>
+          {expanded && ingredients && !skipped && <div className="mt-3 pt-3 border-t border-gray-700/50"><p className="text-gray-400 text-xs leading-relaxed">{ingredients}</p></div>}
+          {!skipped && (
+            <div className="flex items-center gap-4 mt-2">
+              <span className="text-blue-400 text-xs">P: {macros.p}g</span>
+              <span className="text-yellow-400 text-xs">K: {macros.k}g</span>
+              <span className="text-orange-400 text-xs">F: {macros.f}g</span>
+              {supplement && <span className="text-cyan-400 text-xs ml-auto">{supplement}</span>}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function MacroCircle({ label, value, target, color }) {
+      const r = 28, circ = 2 * Math.PI * r;
+      const pct = Math.min(100, (value / target) * 100);
+      const isOver = value > target;
+      const overPct = isOver ? Math.min(100, ((value - target) / target) * 100) : 0;
+      return (
+        <div className="text-center">
+          <div className="relative inline-flex items-center justify-center">
+            <svg width="68" height="68" style={{transform:"rotate(-90deg)"}}>
+              <circle cx="34" cy="34" r={r} fill="none" stroke="#374151" strokeWidth="5" />
+              <circle cx="34" cy="34" r={r} fill="none" stroke={color} strokeWidth="5"
+                strokeDasharray={circ} strokeDashoffset={circ*(1-pct/100)} strokeLinecap="round"
+                style={{transition:"stroke-dashoffset 0.5s ease"}} />
+              {isOver && <circle cx="34" cy="34" r={r} fill="none" stroke="#EF4444" strokeWidth="5"
+                strokeDasharray={circ} strokeDashoffset={circ*(1-overPct/100)} strokeLinecap="round"
+                style={{transition:"stroke-dashoffset 0.5s ease"}} />}
+            </svg>
+            <span className={`absolute text-xs font-bold ${isOver ? "text-red-400" : "text-white"}`}>{value}</span>
+          </div>
+          <p className="text-gray-400 text-xs mt-1">{label}</p>
+          <p className="text-gray-500" style={{fontSize:"10px"}}>/ {target}</p>
+        </div>
+      );
+    }
+
+    function PhaseProgressRing({ dayIndex, phase }) {
+      const dayNum = dayIndex + 1, total = 56;
+      const r = 32, circ = 2 * Math.PI * r;
+      const offset = circ * (1 - dayNum / total);
+      const hex = (PHASE_COLORS[phase] || {}).hex || "#9CA3AF";
+      return (
+        <div className="flex items-center gap-3">
+          <div className="relative inline-flex items-center justify-center">
+            <svg width="76" height="76" style={{transform:"rotate(-90deg)"}}>
+              <circle cx="38" cy="38" r={r} fill="none" stroke="#374151" strokeWidth="5" />
+              <circle cx="38" cy="38" r={r} fill="none" stroke={hex} strokeWidth="5"
+                strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+                style={{transition:"stroke-dashoffset 0.5s ease"}} />
+            </svg>
+            <span className="absolute text-xs font-bold text-white">{dayNum}</span>
+          </div>
+          <div>
+            <p className="text-gray-400 text-xs">Tag {dayNum} / {total}</p>
+            <p className="text-sm font-semibold" style={{color: hex}}>{phase}</p>
+          </div>
+        </div>
+      );
+    }
+
+    function Modal({ title, onClose, children }) {
+      return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50" onClick={onClose}>
+          <div className="bg-gray-800 rounded-xl p-6 w-full max-w-sm border border-gray-700" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white">{title}</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-white text-xl">×</button>
+            </div>
+            {children}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── MAIN COMPONENT ───
+    function FitnessDashboard() {
+      const [dayIndex, setDayIndex] = useState(findTodayIndex());
+      const [indoor, setIndoor] = usePersistedState('indoor', false);
+      const [view, setView] = useState("day");
+      const [weights, setWeights] = usePersistedState('weights', [{ date: "2026-04-16", kg: 89.8 }]);
+      const [showWeightModal, setShowWeightModal] = useState(false);
+      const [newWeight, setNewWeight] = useState("");
+      const [showAddMeal, setShowAddMeal] = useState(false);
+      const [customMeals, setCustomMeals] = usePersistedState('customMeals', {});
+      const [mealForm, setMealForm] = useState({ name: "", kcal: "", p: "", k: "", f: "" });
+      const [skippedMeals, setSkippedMeals] = usePersistedState('skippedMeals', {});
+      const [expandedMeal, setExpandedMeal] = useState(null);
+      const [breakfastTypes, setBreakfastTypes] = usePersistedState('breakfastTypes', {});
+      const [dinnerChoices, setDinnerChoices] = usePersistedState('dinnerChoices', {});
+
+      const today = RAW[dayIndex];
+      const todayTrain = TRAIN[dayIndex];
+      const isTortilla = breakfastTypes[dayIndex] === 'tortilla';
+      const dinnerIdx = dinnerChoices[dayIndex] || 0; // 0, 1, or 2
+      const dinnerOptions = [today.di, today.di2, today.di3].filter(Boolean);
+      const activeDinner = dinnerOptions[dinnerIdx] || today.di;
+
+      const getDayLabel = useCallback(() => {
+        const ti = findTodayIndex();
+        if (dayIndex === ti) return "Heute";
+        const d = dayIndex - ti;
+        return d > 0 ? `+${d}` : `${d}`;
+      }, [dayIndex]);
+
+      const mealTotals = useMemo(() =>
+        calcDayTotals(dayIndex, skippedMeals, customMeals, breakfastTypes, dinnerChoices),
+        [dayIndex, skippedMeals, customMeals, breakfastTypes, dinnerChoices]
+      );
+
+      const handleSkipMeal = useCallback((k) => {
+        setSkippedMeals(p => ({...p, [dayIndex+"_"+k]: !p[dayIndex+"_"+k]}));
+      }, [dayIndex, setSkippedMeals]);
+
+      const handleAddMeal = useCallback(() => {
+        if (mealForm.name && mealForm.kcal) {
+          setCustomMeals(p => ({...p, [`${dayIndex}_custom_${Date.now()}`]: {...mealForm, kcal:+mealForm.kcal, p:+mealForm.p||0, k:+mealForm.k||0, f:+mealForm.f||0}}));
+          setMealForm({name:"",kcal:"",p:"",k:"",f:""});
+          setShowAddMeal(false);
+        }
+      }, [mealForm, dayIndex, setCustomMeals]);
+
+      const addWeight = useCallback(() => {
+        if (newWeight) {
+          setWeights(p => [...p, {date: today.dt, kg: parseFloat(newWeight)}]);
+          setNewWeight(""); setShowWeightModal(false);
+        }
+      }, [newWeight, today.dt, setWeights]);
+
+      const toggleBreakfast = useCallback(() => {
+        setBreakfastTypes(p => ({...p, [dayIndex]: p[dayIndex] === 'tortilla' ? 'shake' : 'tortilla'}));
+      }, [dayIndex, setBreakfastTypes]);
+
+      // Chart data
+      const mealChartData = useMemo(() => {
+        const data = [];
+        for (let i = Math.max(0, dayIndex-6); i <= dayIndex; i++) {
+          const t = calcDayTotals(i, skippedMeals, customMeals, breakfastTypes, dinnerChoices);
+          data.push({ date: formatDate(RAW[i].dt), kcal: t.kcal, beer: RAW[i].beer });
+        }
+        return data;
+      }, [dayIndex, skippedMeals, customMeals, breakfastTypes, dinnerChoices]);
+
+      const weightChartData = useMemo(() => weights.slice(-30).map(w => ({date: w.date, kg: w.kg})), [weights]);
+
+      // Breakfast macros for display
+      const shMacros = isTortilla ? BREAKFAST_TORTILLA : (today.sh || BREAKFAST_SHAKE);
+      const snMacros = isTortilla ? SNACK_LIGHT : today.sn;
+      const shName = isTortilla
+        ? "Tortilla: Ei, Käse, Spinat, Avocado"
+        : "40g Protein, 120g Skyr, Beeren, Goji, Chia";
+
+      return (
+        <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
+          <div className="max-w-2xl mx-auto">
+            {/* Header + Progress Ring */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">Fitness Dashboard</h1>
+                <p className="text-gray-400 text-sm">Hilmar's 56-Tage Plan</p>
+              </div>
+              <PhaseProgressRing dayIndex={dayIndex} phase={today.ph} />
+            </div>
+
+            {/* Day Navigation */}
+            <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 mb-4 flex items-center justify-between">
+              <button onClick={() => setDayIndex(Math.max(0, dayIndex-1))} className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">◀</button>
+              <div className="text-center">
+                <p className="text-white font-bold">{formatDate(today.dt)}</p>
+                <p className="text-gray-400 text-xs">Tag {dayIndex+1} ({getDayLabel()})</p>
+              </div>
+              <button onClick={() => setDayIndex(Math.min(RAW.length-1, dayIndex+1))} className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">▶</button>
+            </div>
+
+            {/* Week Selector Pills */}
+            <div className="flex gap-1.5 mb-4 justify-center flex-wrap">
+              {WEEK_PHASES.map((wp, i) => {
+                const c = PHASE_COLORS[wp.ph];
+                const active = today.wk === wp.wk;
+                return <button key={i} onClick={() => setDayIndex(WEEK_START_INDEX[i])}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${active ? c.bg+" "+c.text : "bg-gray-800 text-gray-500 hover:text-gray-300"}`}>
+                  W{wp.wk}
+                </button>;
+              })}
+            </div>
+
+            {/* View Tabs */}
+            <div className="flex gap-2 mb-6">
+              {[["day","📅 Tag"],["week","📊 Woche"],["progress","📈 Fortschritt"]].map(([v,l]) =>
+                <button key={v} onClick={() => setView(v)}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${view===v ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"}`}>{l}</button>
+              )}
+            </div>
+
+            {/* View Content */}
+            <div className="bg-gray-800/30 rounded-xl p-4 border border-gray-700/50 mb-6">
+
+              {/* ═══ DAY VIEW ═══ */}
+              {view === "day" && (
+                <div className="space-y-4">
+                  {/* Tagesübersicht */}
+                  <div className="bg-gray-800/50 rounded-xl p-5 border border-gray-700/50">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-white font-semibold">Tagesübersicht</span>
+                      <button onClick={() => setShowAddMeal(true)} className="text-blue-400 text-xs hover:text-blue-300">+ Mahlzeit</button>
+                    </div>
+                    <div className="grid grid-cols-4 gap-3">
+                      <MacroCircle label="kcal" value={mealTotals.kcal} target={today.beer ? 3250 : 1840} color="#818CF8" />
+                      <MacroCircle label="Protein" value={mealTotals.p} target={178} color="#34D399" />
+                      <MacroCircle label="Carbs" value={mealTotals.k} target={130} color="#FBBF24" />
+                      <MacroCircle label="Fett" value={mealTotals.f} target={70} color="#60A5FA" />
+                    </div>
+                  </div>
+
+                  {/* Training Card */}
+                  <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center">
+                          <span style={{fontSize:20}}>{TRAINING_ICONS[todayTrain.type] || TRAINING_ICONS[today.tr.type] || "📋"}</span>
+                        </div>
+                        <div>
+                          <p className="text-white font-semibold text-lg">{todayTrain.type}</p>
+                          <p className="text-gray-400 text-sm">{todayTrain.duration}</p>
+                        </div>
+                      </div>
+                      {todayTrain.hasIndoorAlt && (
+                        <button onClick={() => setIndoor(!indoor)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${indoor ? "bg-gray-600 text-amber-300" : "bg-emerald-800 text-emerald-200"}`}>
+                          {indoor ? "🏠 Indoor" : "🌳 Outdoor"}
+                        </button>
+                      )}
+                    </div>
+                    {todayTrain.type.startsWith("Kraft") && (
+                      <div className="mb-3 px-3 py-1.5 bg-indigo-900/30 rounded-lg border border-indigo-800/40">
+                        <p className="text-indigo-300 text-xs">🏋️ Langhantel: 2×5kg + Stange = 30kg | Kurzhanteln: je 2×2,5kg + Stange | Rudermaschine</p>
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      {(() => {
+                        const exs = indoor && todayTrain.hasIndoorAlt ? todayTrain.indoor : todayTrain.outdoor;
+                        return exs && exs.length > 0 ? exs.map((ex, i) => {
+                          const txt = ex.raw || "";
+                          const isH = txt.endsWith(":") || txt.startsWith("Warm-up") || txt.startsWith("Cool-down");
+                          return (
+                            <div key={i} className={`flex items-start gap-2.5 ${isH?"mt-1":""}`}>
+                              <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${isH?"bg-indigo-500":"bg-indigo-400"}`} />
+                              <p className={`text-sm leading-relaxed ${isH?"text-indigo-300 font-medium":"text-gray-300"}`}>{txt}</p>
+                            </div>
+                          );
+                        }) : (
+                          <p className="text-gray-500 text-sm italic">
+                            {todayTrain.type === "Ruhetag" ? "Ruhetag — keine Übungen" : todayTrain.type === "Recovery" ? "Plan abgeschlossen 🎉" : "—"}
+                          </p>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Meals */}
+                  <div>
+                    <h3 className="text-gray-400 text-xs font-semibold uppercase mb-2">Mahlzeiten</h3>
+                    <div className="space-y-2">
+                      {/* Breakfast — toggle between Shake and Tortilla+Shake */}
+                      {today.sh && (
+                        <div>
+                          <div className="flex gap-1.5 mb-2">
+                            <button onClick={() => setBreakfastTypes(p => ({...p, [dayIndex]: undefined}))}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${!isTortilla ? "bg-purple-700 text-white" : "bg-gray-800 text-gray-500"}`}>
+                              Shake
+                            </button>
+                            <button onClick={() => setBreakfastTypes(p => ({...p, [dayIndex]: 'tortilla'}))}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${isTortilla ? "bg-amber-700 text-white" : "bg-gray-800 text-gray-500"}`}>
+                              Tortilla + Shake
+                            </button>
+                          </div>
+                          {isTortilla ? (
+                            <>
+                              <MealCard time="13:00" label="Tortilla-Wrap" name="Tortilla mit Avocado und Ei"
+                                ingredients="1 Vollkorn-Tortilla (60g), 2 Eier (Rührei), ½ Avocado (60g), Salz, Pfeffer, Chiliflocken"
+                                macros={BREAKFAST_TORTILLA} color="bg-amber-900/40" border="border-amber-700/40"
+                                expanded={expandedMeal==='sh'} onToggle={() => setExpandedMeal(expandedMeal==='sh'?null:'sh')}
+                                skipped={skippedMeals[`${dayIndex}_sh`]} onSkip={() => handleSkipMeal('sh')} />
+                              <MealCard time="13:00" label="Protein-Shake" name="40g Whey Protein + Wasser"
+                                macros={{kcal: 160, p: 32, k: 4, f: 2}} color="bg-purple-900/30" border="border-purple-700/30"
+                                supplement={`💊 Creatin ${today.sup?.creatine_dose || "5g"}`} />
+                            </>
+                          ) : (
+                            <MealCard time="13:00" label="Protein-Shake" name={shName}
+                              macros={shMacros} color="bg-purple-900/40" border="border-purple-700/40"
+                              expanded={expandedMeal==='sh'} onToggle={() => setExpandedMeal(expandedMeal==='sh'?null:'sh')}
+                              skipped={skippedMeals[`${dayIndex}_sh`]} onSkip={() => handleSkipMeal('sh')}
+                              supplement={`💊 Creatin ${today.sup?.creatine_dose || "5g"} + 40g Protein`} />
+                          )}
+                        </div>
+                      )}
+
+                      {/* Snack */}
+                      {(isTortilla || today.sn) && <MealCard time="16:00" label="Snack"
+                        name={isTortilla ? SNACK_LIGHT.name : today.sn?.name}
+                        macros={snMacros || SNACK_LIGHT}
+                        color="bg-amber-900/30" border="border-amber-700/30"
+                        expanded={expandedMeal==='sn'} onToggle={() => setExpandedMeal(expandedMeal==='sn'?null:'sn')}
+                        skipped={skippedMeals[`${dayIndex}_sn`]} onSkip={() => handleSkipMeal('sn')} />}
+
+                      {/* Dinner — with 3 options to cycle through */}
+                      {activeDinner && (
+                        <div>
+                          {dinnerOptions.length > 1 && (
+                            <div className="flex items-center justify-between mb-2">
+                              <button onClick={() => setDinnerChoices(p => ({...p, [dayIndex]: ((dinnerIdx - 1) + dinnerOptions.length) % dinnerOptions.length}))}
+                                className="bg-gray-700 hover:bg-gray-600 text-white px-2.5 py-1 rounded text-xs">◀</button>
+                              <span className="text-gray-500 text-xs">Option {dinnerIdx + 1} / {dinnerOptions.length}</span>
+                              <button onClick={() => setDinnerChoices(p => ({...p, [dayIndex]: (dinnerIdx + 1) % dinnerOptions.length}))}
+                                className="bg-gray-700 hover:bg-gray-600 text-white px-2.5 py-1 rounded text-xs">▶</button>
+                            </div>
+                          )}
+                          <MealCard time={activeDinner.time || "18:30"} label={activeDinner.type || "Dinner"}
+                            name={activeDinner.name} ingredients={activeDinner.ingredients}
+                            macros={activeDinner} color="bg-emerald-900/30" border="border-emerald-700/30"
+                            expanded={expandedMeal==='di'} onToggle={() => setExpandedMeal(expandedMeal==='di'?null:'di')}
+                            skipped={skippedMeals[`${dayIndex}_di`]} onSkip={() => handleSkipMeal('di')}
+                            supplement={`💊 ${DINNER_SUPPLEMENTS}`} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Magnesium */}
+                  <div className="bg-gray-700/20 rounded-lg p-3 border border-gray-600/30">
+                    <span className="text-cyan-400 text-xs">💊 {BEDTIME_SUPPLEMENT} — vor dem Schlafen</span>
+                  </div>
+
+                  {/* Beer */}
+                  {today.beer && (
+                    <div className="bg-yellow-900/20 rounded-xl p-3 border border-yellow-600/40">
+                      <p className="text-yellow-300 text-xs font-semibold">🍺 Bier heute (+{BEER_KCAL} kcal)</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ═══ WEEK VIEW ═══ */}
+              {view === "week" && (
+                <div className="space-y-4">
+                  {BarChart ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={mealChartData}>
+                        <XAxis dataKey="date" tick={{fill:'#9ca3af',fontSize:12}} />
+                        <YAxis tick={{fill:'#9ca3af',fontSize:12}} />
+                        <Tooltip contentStyle={{background:'#1f2937',border:'1px solid #4b5563',borderRadius:'8px',color:'#f3f4f6'}} />
+                        <Bar dataKey="kcal" fill="#60a5fa" radius={[8,8,0,0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : <p className="text-gray-500 text-sm">Chart konnte nicht geladen werden.</p>}
+                  <div className="text-gray-400 text-xs space-y-1">
+                    {RAW.slice(Math.max(0, dayIndex-6), dayIndex+1).map((d, i) => {
+                      const idx = Math.max(0, dayIndex-6) + i;
+                      const t = calcDayTotals(idx, skippedMeals, customMeals, breakfastTypes);
+                      return (
+                        <div key={i} className="flex justify-between p-2 bg-gray-800/30 rounded">
+                          <span>{formatDate(d.dt)}</span>
+                          <span className="text-gray-300">{t.kcal} kcal {d.beer ? "🍺" : ""}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PROGRESS VIEW ═══ */}
+              {view === "progress" && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-gray-400 text-xs font-semibold mb-3 uppercase">Gewicht Tracking</h3>
+                    {weightChartData.length > 1 && LineChart && (
+                      <ResponsiveContainer width="100%" height={250}>
+                        <LineChart data={weightChartData}>
+                          <XAxis dataKey="date" tick={{fill:'#9ca3af',fontSize:12}} />
+                          <YAxis tick={{fill:'#9ca3af',fontSize:12}} domain={['dataMin - 1','dataMax + 1']} />
+                          <Tooltip contentStyle={{background:'#1f2937',border:'1px solid #4b5563',borderRadius:'8px',color:'#f3f4f6'}} />
+                          <Line type="monotone" dataKey="kg" stroke="#10b981" dot={{fill:'#10b981',r:4}} strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    )}
+                    <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg mt-3">
+                      <span className="text-gray-300 text-sm">Aktuelles Gewicht</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-lg font-bold">{weights[weights.length-1]?.kg.toFixed(1)} kg</span>
+                        <button onClick={() => setShowWeightModal(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">+</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-700/30 rounded-lg p-2 text-center">
+                      <p className="text-gray-400 text-xs mb-1">Phase</p>
+                      <p className="text-cyan-300 text-lg font-bold">{today.ph}</p>
+                    </div>
+                    <div className="bg-gray-700/30 rounded-lg p-2 text-center">
+                      <p className="text-gray-400 text-xs mb-1">Woche</p>
+                      <p className="text-pink-300 text-lg font-bold">{today.wk}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modals */}
+            {showWeightModal && (
+              <Modal title="Gewicht erfassen" onClose={() => setShowWeightModal(false)}>
+                <div className="space-y-3">
+                  <input type="number" step="0.1" value={newWeight} onChange={e => setNewWeight(e.target.value)} placeholder="Gewicht (kg)" className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 text-sm" />
+                  <div className="flex gap-2">
+                    <button onClick={addWeight} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium">Speichern</button>
+                    <button onClick={() => setShowWeightModal(false)} className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded text-sm">Abbrechen</button>
+                  </div>
+                </div>
+              </Modal>
+            )}
+            {showAddMeal && (
+              <Modal title="Mahlzeit hinzufügen" onClose={() => setShowAddMeal(false)}>
+                <div className="space-y-3">
+                  <input type="text" value={mealForm.name} onChange={e => setMealForm({...mealForm,name:e.target.value})} placeholder="Name" className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 text-sm" />
+                  <input type="number" value={mealForm.kcal} onChange={e => setMealForm({...mealForm,kcal:e.target.value})} placeholder="kcal" className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 text-sm" />
+                  <div className="grid grid-cols-3 gap-2">
+                    <input type="number" value={mealForm.p} onChange={e => setMealForm({...mealForm,p:e.target.value})} placeholder="Protein" className="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 text-sm" />
+                    <input type="number" value={mealForm.k} onChange={e => setMealForm({...mealForm,k:e.target.value})} placeholder="Carbs" className="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 text-sm" />
+                    <input type="number" value={mealForm.f} onChange={e => setMealForm({...mealForm,f:e.target.value})} placeholder="Fett" className="bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 text-sm" />
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={handleAddMeal} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium">Speichern</button>
+                    <button onClick={() => setShowAddMeal(false)} className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded text-sm">Abbrechen</button>
+                  </div>
+                </div>
+              </Modal>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── ERROR BOUNDARY ───
+    class ErrorBoundary extends React.Component {
+      constructor(props) { super(props); this.state = { error: null }; }
+      static getDerivedStateFromError(error) { return { error: error.message }; }
+      render() {
+        if (this.state.error) return (
+          <div style={{padding:40,color:'#ef4444',background:'#1f2937',fontFamily:'monospace'}}>
+            <h2 style={{color:'#f87171'}}>Dashboard Error</h2>
+            <pre style={{whiteSpace:'pre-wrap',color:'#fca5a5'}}>{this.state.error}</pre>
+          </div>
+        );
+        return this.props.children;
+      }
+    }
+
+    try {
+      ReactDOM.createRoot(document.getElementById('root')).render(
+        <ErrorBoundary><FitnessDashboard /></ErrorBoundary>
+      );
+    } catch(e) {
+      document.getElementById('root').innerHTML = '<div style="padding:40px;color:#ef4444;font-family:monospace"><h2>Startup Error</h2><pre>'+e.message+'</pre></div>';
+    }
+  </script>
+</body>
+</html>
