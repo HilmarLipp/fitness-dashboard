@@ -146,8 +146,9 @@ const TRAIN = [
     const BREAKFAST_SHAKE = { kcal: 360, p: 51, k: 33, f: 6 };
     const BREAKFAST_TORTILLA = { kcal: 576, p: 42, k: 44, f: 27 };
     const SNACK_LIGHT = { name: "Edamame (120g, gekocht)", kcal: 170, p: 17, k: 12, f: 6 };
-    const DINNER_SUPPLEMENTS = "Omega-3, Vitamin D3, K2, Zink";
-    const BEDTIME_SUPPLEMENT = "Magnesium";
+    const MORNING_SUPPLEMENTS = "NR 300mg, DHEA 25mg, B12+Folat";
+    const DINNER_SUPPLEMENTS = "Omega 3/D3/K2 (2 Kaps.), Zink 25mg";
+    const BEDTIME_SUPPLEMENT = "Magnesium Bisglycinat (3 Kaps.)";
 
     const PHASE_COLORS = {
       "Aufbau": { bg: "bg-blue-600", text: "text-white", hex: "#3B82F6" },
@@ -534,14 +535,14 @@ const TRAIN = [
                                 skipped={skippedMeals[`${dayIndex}_sh`]} onSkip={() => handleSkipMeal('sh')} />
                               <MealCard time="13:00" label="Protein-Shake" name="40g Whey Protein + Wasser"
                                 macros={{kcal: 160, p: 32, k: 4, f: 2}} color="bg-purple-900/30" border="border-purple-700/30"
-                                supplement={`💊 Creatin ${today.sup?.creatine_dose || "5g"}`} />
+                                supplement={`💊 Creatin ${today.sup?.creatine_dose || "5g"}, ${MORNING_SUPPLEMENTS}`} />
                             </>
                           ) : (
                             <MealCard time="13:00" label="Protein-Shake" name={shName}
                               macros={shMacros} color="bg-purple-900/40" border="border-purple-700/40"
                               expanded={expandedMeal==='sh'} onToggle={() => setExpandedMeal(expandedMeal==='sh'?null:'sh')}
                               skipped={skippedMeals[`${dayIndex}_sh`]} onSkip={() => handleSkipMeal('sh')}
-                              supplement={`💊 Creatin ${today.sup?.creatine_dose || "5g"} + 40g Protein`} />
+                              supplement={`💊 Creatin ${today.sup?.creatine_dose || "5g"}, ${MORNING_SUPPLEMENTS}`} />
                           )}
                         </div>
                       )}
